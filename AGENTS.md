@@ -25,16 +25,23 @@ Consult these guides before working on related tasks:
 
 ## Mission
 
-Build a premium personal portfolio for Chi-An Chen.
+Build a premium, person-centered, multi-page web résumé for Chi-An Chen.
+The primary purpose is to introduce the person, education, experience, and
+capabilities. Research and engineering work support this biography; public
+repositories do not determine what belongs on the site.
 
-The website should communicate three identities:
+Plan seven distinct site pages: Home (/), Education (/education/), Experience
+(/experience/), Skills (/skills/), Research (/research/), Honors (/honors/), and
+Certifications (/certifications/). These are page routes, not a single page's
+section anchors. Home centers the name, a real supplied photograph, a natural
+introduction, education summary, and capabilities overview. Its primary actions
+lead to internal pages. GitHub is an optional secondary/footer link; no repository
+list belongs in the hero.
 
-1. AI / Computer Vision researcher
-2. Engineer
-3. Someone with strong visual and product taste
-
-The result must feel intentionally designed, not generated from a
-generic portfolio template.
+The site should communicate a computer vision / AI research background,
+engineering capability, and considered visual taste through the person's actual
+background. Use English website copy and Traditional Chinese design explanations.
+The result must feel intentionally designed, not like a generic template.
 
 ## Primary Design Direction
 
@@ -102,7 +109,8 @@ Avoid:
 - excessive glassmorphism
 - skill badge clouds
 - pill-shaped elements everywhere
-- generic "Hi, I'm..." hero layouts
+- generic "Hi, I'm..." hero layouts that obscure personal background; natural
+  self-introductions, the person's name, and real portraits are welcome
 - unnecessary icons
 - decorative UI without purpose
 - visual effects simply for showing off
@@ -148,37 +156,49 @@ Do not add frameworks or dependencies without a concrete need.
 
 ## Project Sources and Editorial Selection
 
-`docs/design-guidance.md` contains public profile links, optional reference
-websites, and adaptable design principles.
+`docs/design-guidance.md` is the current editorial and visual brief.
+`reference_data/` is local-only source material, including résumés, LinkedIn
+exports, photographs, certificates, awards, and personal profile links.
+`reference_data/web.txt` is a source list, not an approved visual-reference list.
 
-`reference_data/web.txt` contains personal profile links, not an approved list
-of visual references. The entire `reference_data/` directory is local-only.
+User-provided résumés, LinkedIn exports, certificates, and direct statements are
+valid editorial evidence. A public repository or public source URL is not a
+prerequisite. Describe publishable roles, tasks, methods, and capabilities even
+when code, research, or project details are private. Never request public code
+as a condition of inclusion, access private repositories, or infer unprovided
+work details. Missing optional details should narrow a claim, not erase an
+otherwise supported education or experience record.
 
-PDFs in `reference_data/`, including `簡歷_陳麒安_0514.pdf`, are optional source
-material for website creation. They are not a specification, a required section
-list, or proof that every time-sensitive statement is still current.
+Compare start/end dates and current-status claims item by item across sources.
+Do not mechanically copy Present from an older résumé. Do not use the old
+undergraduate résumé as the current identity. Preserve distinctions between
+published, accepted, under review, and research topics. Keep numerical claims
+within their supported scope; omit unnecessary metrics rather than inventing
+conditions. A provided role can be shown without a speculative task description.
 
-Select only content that supports the website's research and engineering story.
-It is acceptable to omit GPA, certificates, older awards, contact details,
-minor projects, and any other material that is irrelevant, dated, or weakly
-supported. Do not reproduce the full resume or require the user to update all
-PDFs before proceeding. Missing optional facts should not block design work.
+Merge duplicate scans and multiple proofs of the same event. Distinguish
+professional credentials, course completion, participation, paper publication,
+and awards. Keep team and individual recognition distinct. Do not count an
+exam score report plus its certificate as separate achievements, or a school
+recognition plus the original competition award as two wins.
 
-Use supported facts faithfully when selected. Preserve distinctions between
-published, accepted, under review, and ongoing work. For an unverified current
-status, omit the claim or mark it for confirmation rather than inventing an
-update. Keep numerical claims tied to their source and original scope.
+Use Chi-An Chen as the display name; preserve author names as supplied in the
+chosen publication source. English editorial translations must not replace
+original publication titles or imply an official translation. Source locations,
+private details, discrepancies, and pending confirmations belong in work/.
+Public copy should read as a natural résumé, without audit boilerplate such as
+runtime-verification or repository-ownership disclaimers.
 
-Use Chi-An Chen as the working display name from this brief; retain Chi-An Chen
-when matching publication author names. The working audience is research and
-engineering collaborators and potential employers. These are editable defaults,
-not reasons to interrupt progress. Choose a coherent initial language from the
-selected content and state the assumption; bilingual routing is not required.
+Use only real supplied photos of the person. Do not generate replacement faces,
+change facial features, or infer professional qualities from travel photos.
+Choose images intentionally and preserve the originals. Do not publish original
+certificates, IDs, addresses, telephone numbers, full source PDFs, or raw exports
+as website attachments. Only curated public copy and intentional website assets
+may eventually enter src/ or public/. The site must build without local sources.
 
-Only curated, intended-for-publication text and website assets belong in the
-site. Never copy whole source PDFs, raw contact data, or reference directories
-into `public/`, `src/`, generated site output, or public documentation.
-The website must build without the local reference directory or PDFs.
+The previous repo-led A/B/C exploration is historical and superseded in content
+and recommendation. Preserve its images; a new direction may reuse suitable
+color or typography without inheriting that homepage structure.
 
 ## Version Control
 
