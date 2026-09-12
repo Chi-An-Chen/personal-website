@@ -1,5 +1,6 @@
 # Chi-An Chen — Multi-page résumé content
 
+> 原型進度（2026-09-12）：七個獨立頁面已實作，完整導覽與交叉連結已啟用。Home 保留 **Explore my education** 為主要入口，並補入 **View experience**。以下內容依各頁呈現，編輯說明不輸出至網站。
 2026-09-12 · English website copy · Seven independent pages
 
 以下按頁面編排正式候選文案。用途、連結規劃與文末來源類型表是編輯說明；來源定位與待確認事項另存本機。各頁以獨立路徑呈現，不合併為單頁錨點。
@@ -106,8 +107,6 @@ My experience spans computer vision research, applied AI development, and an R&D
 
 **PAPAGO! (PAPAGO Inc.) · Taipei, Taiwan**  
 Aug 2026–Present
-
-正文到角色、機構、地點與日期即完整；本輪不額外生成工作任務段落。此句為編輯指示，不輸出至網站。
 
 ### AI Engineer Intern — Industry–Academia Collaboration
 
@@ -340,11 +339,11 @@ The Jetson Nano learning entry covers the courses “透過 Jetson Nano 開發�
 
 ## 全站導覽與連結規劃（編輯說明）
 
-- 每頁使用 Home、Education、Experience、Skills、Research、Honors、Certifications 七個站內入口；目前頁用文字與底線區別，未來加 aria-current。
+- 每頁使用 Home、Education、Experience、Skills、Research、Honors、Certifications 七個站內入口；目前頁用文字與底線區別，已使用 aria-current。
 - 姓名連回 `/`；內頁連結使用上列獨立 URL。Experience ↔ Research、Research ↔ Honors、Skills ↔ Experience／Certifications 是主要交叉閱讀路徑。
 - 頁尾：[LinkedIn](https://www.linkedin.com/in/chi-an-chen-993590315)；可選 [GitHub](https://github.com/Chi-An-Chen)。不作首頁主要 CTA。
 - Research 可在個別紀錄加既有 DOI 或公開程式連結；無連結時仍顯示完整題目、作者、年份與摘要，不出現 Disabled、Private 或 Coming soon 按鈕。
-- 路徑為本站邏輯路徑；後续 Astro 階段再配合 GitHub Pages base path。本輪不建立頁面或路由。
+- 路徑為本站邏輯路徑；Astro 頁面與資產連結共用 base path 處理，七頁均有實際路由。
 
 ## 各頁來源類型（編輯說明，不輸出至網站）
 
@@ -352,7 +351,7 @@ The Jetson Nano learning entry covers the courses “透過 Jetson Nano 開發�
 | --- | --- | --- |
 | Home | 使用者提供的正式肖像、履歷、LinkedIn 匯出 | 姓名、目前教育身分、背景與能力摘要 |
 | Education | 履歷、LinkedIn 教育紀錄、早期履歷、社群／服務學習證明 | 碩士與學士日期、研究背景、學習經歷 |
-| Experience | LinkedIn 工作紀錄與履歷的任務描述 | 職稱、起訖日期、產學任務；不依赖公開程式 |
+| Experience | LinkedIn 工作紀錄與履歷的任務描述 | 職稱、起訖日期、產學任務；不依賴公開程式 |
 | Skills | 履歷技能、LinkedIn 技能與經歷、學習證明 | 任務導向能力群組，避免無依據熟練度分數 |
 | Research | 履歷書目／研究敘述、論文刊登證明、論文獎狀 | 題目、作者、會議與研究方向 |
 | Honors | 主辦單位獎狀、校內表揚與履歷 | 獲獎事件、團隊歸屬、合併重複證明 |

@@ -1,0 +1,10 @@
+---
+import { pageUrl, pages, type PageId } from '../data/profile';
+interface Props { items: PageId[]; label?: string; }
+const { items, label = 'Related pages' } = Astro.props;
+---
+<nav class="related-links" aria-label={label}>
+  <ul class="plain-list">
+    {items.map(id => <li><a class="text-link" href={pageUrl(id)}>{pages.find(page => page.id === id)!.label} <span aria-hidden="true">↗</span></a></li>)}
+  </ul>
+</nav>

@@ -1,23 +1,42 @@
+---
+import '../styles/global.css';
+import { pages, pageUrl, assetUrl, type PageId } from '../data/profile';
+interface Props { title: string; description: string; currentPage: PageId; }
+const { title, description, currentPage } = Astro.props;
+const availablePages = pages.filter((page) => page.available);
+---
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f6f4ee" />
+    <link rel="icon" type="image/svg+xml" href={assetUrl('favicon.svg')} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header container">
+      <a class="wordmark" href={pageUrl('home')} aria-label="Chi-An Chen — Home">Chi-An Chen<span aria-hidden="true">.</span></a>
+      <nav class="desktop-navigation" aria-label="Main navigation"><ul class="nav-list plain-list">
+        {availablePages.map((page) => <li><a href={pageUrl(page.id)} aria-current={currentPage === page.id ? 'page' : undefined}>{page.label}</a></li>)}
+      </ul></nav>
+      <details class="mobile-navigation">
+        <summary>Menu <span class="menu-current">{pages.find(page => page.id === currentPage)!.label}</span></summary>
+        <nav aria-label="Mobile navigation"><ul class="nav-list plain-list">
+          {availablePages.map((page) => <li><a href={pageUrl(page.id)} aria-current={currentPage === page.id ? 'page' : undefined}>{page.label}</a></li>)}
+        </ul></nav>
+      </details>
+    </header>
+    <main id="main" class="container" tabindex="-1"><slot /></main>
+    <footer class="site-footer container">
+      <div class="footer-identity"><a class="wordmark" href={pageUrl('home')}>Chi-An Chen</a><p>Computer vision, deep learning & applied AI.</p></div>
+      <nav aria-label="Footer navigation"><ul class="footer-links plain-list">
+        {availablePages.map((page) => <li><a href={pageUrl(page.id)} aria-current={currentPage === page.id ? 'page' : undefined}>{page.label}</a></li>)}
+        <li><a href="https://www.linkedin.com/in/chi-an-chen-993590315">LinkedIn <span aria-hidden="true">↗</span></a></li>
+        <li><a href="https://github.com/Chi-An-Chen">GitHub <span aria-hidden="true">↗</span></a></li>
+      </ul></nav>
+    </footer>
+  </body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>

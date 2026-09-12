@@ -20,15 +20,15 @@
 | Honors | `/honors/` | 論文獎與競賽成果；標示事件、年份及團隊歸屬。 |
 | Certifications | `/certifications/` | 專業認證與課程結訓分組，避免混淆資格性質。 |
 
-這些是獨立 URL，不能用單頁錨點冒充。桌面提供七個文字導覽；手機保留可到達的七頁入口。姓名連回 Home。Experience 與 Research 分別回答「擔任什麼角色」和「研究什麼」，以跨頁連結建立關係，不複製整頁敘述。
+這些是獨立 URL，不能用單頁錨點冒充。七頁 Astro 原型均已完成。桌面提供七個文字入口；1100 px 以下使用原生 details／summary 手機選單，展開後為兩欄站內連結，無 JavaScript 仍可開關和導覽。選單在正常文件流展開，不遮住內容，不做空連結或假按鈕。姓名連回 Home。Experience 與 Research 分別回答「擔任什麼角色」和「研究什麼」，以跨頁連結建立關係，不複製整頁敘述。
 
 ## 首頁閱讀順序
 
-1. 七頁站內導覽。
+1. 七頁站內導覽，標示目前頁面。
 2. 真實照片、Chi-An Chen、M.S. Student in Computer Science and Information Engineering、National Ilan University, Taiwan、兩句人物簡介。
-3. 主要入口 View experience，次要入口 Education，皆前往獨立內頁。
+3. 保留主要入口 Explore my education，並加入 View experience，分別前往獨立內頁。
 4. 學歷摘要：碩士 Sep 2025–Present、學士 Sep 2021–Jun 2025；能力概覽：Computer vision、AI applications、Data & deployment。
-5. 短經歷亮點與研究／獲獎入口；不把所有內頁內容搬回首頁。
+5. 短經歷、研究／獲獎及學習摘要，連至對應內頁；能力摘要連至 Skills。
 6. 頁尾低干擾的 LinkedIn、可選 GitHub。
 
 目前在學及實習身分由本輪提供的 LinkedIn 匯出與履歷支持。過往工作項目依最新明列起訖日期使用過去式，不延續舊的 Present。
@@ -55,9 +55,9 @@
 
 ## 本輪視覺方向：Personal Academic Profile
 
-姓名是最大文字，真實正式照片與介紹並列；教育與能力在下一閱讀層直接可見。暖白底、墨綠文字、低彩度分隔線；姓名採 Georgia，正文與導覽採可讀的系統無襯線。沒有卡片牆、技能百分比、repo 首屏清單或領域標語取代姓名。
+姓名是最大文字，小型圓形頭像位於姓名介紹區右上方；姓名、教育身分、簡介與入口共用完整內容區，不保留舊稿左側的大照片欄。教育與能力在下一閱讀層直接可見。暖白底、墨綠文字、低彩度分隔線；姓名採 Georgia，正文與導覽採可讀的系統無襯線。沒有卡片牆、技能百分比、repo 首屏清單或領域標語取代姓名。
 
-首屏照片使用提供的正式肖像，保持原始比例與色彩，不修臉、不重繪、不移除或生成背景。旅遊照可保留作後續個人側面的選材，不推導成性格、專業能力或新經歷。
+首屏沿用同一張正式肖像。原始照片原樣保留於本機；網站使用等比例縮小、移除中繼資料的 WebP 衍生檔。圓形顯示完全由 CSS 的 border-radius: 50%、object-fit: cover 與 object-position: 50% 0% 控制，不拉伸、不改臉、不重繪人物或背景。桌面頭像直徑 136 px（允許範圍 120–144 px）；手機 88 px（允許範圍 80–96 px），放在姓名右側。逐個尺寸檢查髮頂與臉部完整可見；裁切只作用於顯示框，不修改原件。旅遊照可保留作後續個人側面的選材，不推導成性格、專業能力或新經歷。
 
 內頁以一致標題、短導言及開放式列表延伸。Education／Experience 重視日期和角色；Research 重視題目與發表資訊；Honors／Certifications 重視分類與名稱，不展示整張證書拼貼。
 
@@ -67,4 +67,4 @@ CSS-first、semantic HTML、minimal JavaScript、Astro 和 GitHub Pages 相容�
 
 舊 A／B／C 圖片保留作歷史探索，其 repo 主導結構與推薦已不適用。字體、色彩可按新內容重用，不代表選定舊 A。
 
-本輪只更新四份規則／內容／設計文件，製作一張桌面首頁方向稿。來源及製作草稿留在 work/；視覺稿留在 docs/design-exploration/，兩者均受 Git 忽略。保留既有未提交內容的歷史副本及第三方 skills，不改 src、public 或套件設定，不安裝、不提交、不上傳、不部署。
+本輪已獲授權進入 Astro 原型：沿用共用頁面框架與 Home、Education，完成 Experience、Skills、Research、Honors、Certifications 與七頁導覽；維持既有依賴及 lockfile，不做依賴升級。保持 CSS-first、少量 JavaScript；本輪介面不需客戶端 JavaScript。完成建置、桌面、小型筆電、手機與鍵盤操作檢查。來源及查核資料留在 work/；實際瀏覽器截圖留在 docs/design-exploration/，兩者均受 Git 忽略。保留既有未提交內容、第三方 skills、原始資料及舊方向稿，不提交、不上傳、不部署。

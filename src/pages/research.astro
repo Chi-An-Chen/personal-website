@@ -1,0 +1,31 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageIntro from '../components/PageIntro.astro';
+import RelatedLinks from '../components/RelatedLinks.astro';
+import { publications } from '../data/resume';
+---
+<Layout title="Research — Chi-An Chen" description="Research interests and selected publications in efficient visual recognition, breast tumor segmentation, and multimodal AI." currentPage="research">
+  <PageIntro title="Research" eyebrow="Questions & publications" description="My research focuses on computer vision and deep learning, including efficient visual models, medical image segmentation, and multimodal AI." />
+  <section class="research-interests" aria-labelledby="interests-title">
+    <h2 id="interests-title">Research interests</h2>
+    <dl class="interests-list">
+      <div><dt>Efficient visual recognition</dt><dd>Lightweight vision-transformer architectures for biometric image recognition.</dd></div>
+      <div><dt>Medical image segmentation</dt><dd>U-Net-based models combining transformers, state space modeling, linear attention, and frequency-aware features for breast tumor segmentation.</dd></div>
+      <div><dt>Multimodal and generative AI</dt><dd>Vision-language models for fine-grained agricultural image classification and generative approaches to virtual try-on.</dd></div>
+      <div><dt>Small language models</dt><dd>I have also explored compact reasoning and verification approaches for small language models.</dd></div>
+    </dl>
+  </section>
+  <section class="publications-section" aria-labelledby="publications-title">
+    <h2 id="publications-title">Selected publications</h2>
+    <ol class="publication-list plain-list">
+      {publications.map((paper,index) => <li id={'publication-'+(index+1)}>
+        <p class="publication-venue">{paper.venue} · <time datetime={paper.year}>{paper.year}</time></p>
+        <h3 lang={paper.lang}>{paper.title}</h3>
+        <p class="authors" lang={paper.lang}>{paper.authors}</p>
+        <p>{paper.description}</p>
+        {paper.award && <RelatedLinks items={['honors']} label={'Recognition for '+paper.venue+' '+paper.year} />}
+      </li>)}
+    </ol>
+  </section>
+  <div class="page-return"><RelatedLinks items={['experience', 'education', 'honors']} /></div>
+</Layout>

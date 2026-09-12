@@ -1,0 +1,33 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageIntro from '../components/PageIntro.astro';
+import RelatedLinks from '../components/RelatedLinks.astro';
+const paperAwards = [
+  { title: 'Best Creative Award · AVSS 2025', date: 'Aug 2025', datetime: '2025-08', paper: 'A Transformer-Mamba UNet for Breast Tumor Segmentation.' },
+  { title: 'Best Conference Papers · IS3C 2025', date: 'Jun 2025', datetime: '2025-06', paper: 'A Lightweight Vision Transformer with Competitive Blocks for Finger Vein Recognition.' },
+  { title: 'Paper Honorable Mention (佳作論文獎) · ITAOI 2025', date: 'May 2025', datetime: '2025-05', paper: '輕量級視覺變壓器結合競爭模組於指靜脈辨識系統。' },
+];
+const competitionAwards = [
+  {title:'Third Place · ESG Sustainable Development Competition', date:'Dec 2025', datetime:'2025-12', context:'College of Humanities and Management, National Ilan University', description:'An AI fashion-platform concept using virtual try-on to reduce returns and support sustainability.'},
+  {title:'Third Place · International ICT Innovative Services Awards 2025', date:'Nov 2025', datetime:'2025-11', context:'Industry–Academia Collaboration, PR3', description:'Team member for ScalpAIoT: An Edge-Cloud Collaborative System for Scalp Health Inspection and Management. The team represented National Ilan University and National Taiwan University of Science and Technology.'},
+  {title:'Third Place · Student Project Competition', date:'May 2025', datetime:'2025-05', context:'College of Electrical Engineering and Computer Science, National Ilan University', description:'A personalized fashion-generation and recommendation system based on generative AI.'},
+  {title:'Award of Excellence (優等獎) · Programming and Information Applications Competition', date:'Jun 2023', datetime:'2023-06', context:'Creative Ideas Category, National Ilan University', description:'An AIoT smart aquarium system.'},
+];
+---
+<Layout title="Honors — Chi-An Chen" description="Paper awards and team competition recognition in computer vision, AI applications, and applied computing." currentPage="honors">
+  <PageIntro title="Honors" eyebrow="Recognition & collaboration" description="Recognition for research and collaborative work in computer vision and applied computing." />
+  <section class="award-section" aria-labelledby="paper-awards"><h2 id="paper-awards">Paper awards</h2>
+    <ul class="award-list plain-list">{paperAwards.map(award => <li>
+      <p class="record-date"><time datetime={award.datetime}>{award.date}</time></p>
+      <div><h3>{award.title}</h3><p class="award-attribution">Awarded to the paper's author team</p><p>{award.paper}</p></div>
+    </li>)}</ul>
+    <RelatedLinks items={['research']} label="Awarded publications" />
+  </section>
+  <section class="award-section" aria-labelledby="competition-awards"><h2 id="competition-awards">Competition awards</h2>
+    <ul class="award-list plain-list">{competitionAwards.map(award => <li>
+      <p class="record-date"><time datetime={award.datetime}>{award.date}</time></p>
+      <div><h3>{award.title}</h3><p class="award-attribution">Team award · {award.context}</p><p>{award.description}</p></div>
+    </li>)}</ul>
+  </section>
+  <div class="page-return"><RelatedLinks items={['education', 'skills']} /></div>
+</Layout>

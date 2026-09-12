@@ -1,0 +1,18 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageIntro from '../components/PageIntro.astro';
+import RelatedLinks from '../components/RelatedLinks.astro';
+import { skillGroups } from '../data/resume';
+import type { PageId } from '../data/profile';
+const related: PageId[][] = [['research', 'experience'], ['experience', 'research'], ['experience'], ['experience', 'certifications']];
+---
+<Layout title="Skills — Chi-An Chen" description="Capabilities in computer vision, language models and retrieval, programming and data workflows, and application deployment." currentPage="skills">
+  <PageIntro title="Skills" eyebrow="Capabilities & practice" description="I work across model development, data preparation, and AI applications. These capabilities connect my research experience with applied engineering work." />
+  <div class="skill-groups">
+    {skillGroups.map((group,index) => <section class="skill-group" aria-labelledby={'skill-'+index}>
+      <h2 id={'skill-'+index}>{group.title}</h2>
+      <div><p>{group.description}</p><p class="tools-line"><strong>Tools & methods</strong><br />{group.tools}</p><RelatedLinks items={related[index]} label={group.title+' background'} /></div>
+    </section>)}
+  </div>
+  <div class="page-return"><RelatedLinks items={['education', 'certifications']} /></div>
+</Layout>

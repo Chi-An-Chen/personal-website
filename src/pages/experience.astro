@@ -1,0 +1,47 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageIntro from '../components/PageIntro.astro';
+import RelatedLinks from '../components/RelatedLinks.astro';
+---
+<Layout title="Experience — Chi-An Chen" description="Chi-An Chen's R&D internship, AI industry–academia collaboration, and computer vision research roles." currentPage="experience">
+  <PageIntro title="Experience" eyebrow="Research & industry" description="My experience spans computer vision research, applied AI development, and an R&D engineering internship." />
+  <ol class="education-records plain-list" aria-label="Roles, most recent first">
+    <li class="education-record" id="papago">
+      <p class="record-date"><time datetime="2026-08">Aug 2026</time> — Present</p>
+      <div class="record-content"><h2>R&D Engineer Intern</h2><p class="record-school">PAPAGO! (PAPAGO Inc.) · Taipei, Taiwan</p></div>
+    </li>
+    <li class="education-record" id="ai-engineering">
+      <p class="record-date"><time datetime="2025-09">Sep 2025</time> — <time datetime="2026-06">Jun 2026</time></p>
+      <div class="record-content">
+        <h2>AI Engineer Intern — Industry–Academia Collaboration</h2><p class="record-school">National Ilan University</p>
+        <p>I developed AI applications for admissions guidance, combining language models, structured data, and data-processing workflows.</p>
+        <div class="role-tasks"><h3>AI-powered admissions counseling</h3><ul>
+          <li>Built a RAG-based counseling system with structured and SQL-based retrieval.</li>
+          <li>Collected, cleaned, and standardized admissions information and school profiles for retrieval and filtering.</li>
+          <li>Designed prompt workflows and data-use constraints for domain-specific answers.</li>
+          <li>Deployed the application on GCP Cloud Run and checked API functionality for integration.</li>
+        </ul></div>
+        <div class="role-tasks"><h3>U.S. college admissions prediction</h3><ul>
+          <li>Developed an admission-probability prediction system using student profiles and college information.</li>
+          <li>Built web-crawling and preprocessing workflows to collect and standardize U.S. college data.</li>
+        </ul></div>
+        <RelatedLinks items={['skills']} label="AI engineering capabilities" />
+      </div>
+    </li>
+    <li class="education-record" id="medical-imaging">
+      <p class="record-date"><time datetime="2025-09">Sep 2025</time> — <time datetime="2026-02">Feb 2026</time></p>
+      <div class="record-content"><h2>Computer Vision Research Assistant — Medical Image Segmentation</h2><p class="record-school">National Ilan University</p>
+        <p>Developed a Transformer-Mamba U-Net for breast tumor segmentation, combining transformer and state space modeling approaches.</p>
+        <RelatedLinks items={['research']} label="Medical imaging research" />
+      </div>
+    </li>
+    <li class="education-record" id="biometrics">
+      <p class="record-date"><time datetime="2025-02">Feb 2025</time> — <time datetime="2025-09">Sep 2025</time></p>
+      <div class="record-content"><h2>Computer Vision Research Assistant — Biometric Recognition</h2><p class="record-school">National Ilan University</p>
+        <p>Proposed LViT-CB, a lightweight vision transformer with competitive blocks for finger vein recognition. This work received paper recognition at IS3C 2025.</p>
+        <RelatedLinks items={['research', 'honors']} label="Biometric research and recognition" />
+      </div>
+    </li>
+  </ol>
+  <div class="page-return"><RelatedLinks items={['education', 'skills']} /></div>
+</Layout>
