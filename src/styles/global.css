@@ -189,7 +189,8 @@
 
 /* Motion enhances existing controls; all content is visible without it. */
 @layer motion {
-  :is(.button, .text-link) > span[aria-hidden='true'] { display: inline-block; }
+  .motion-label { display: inline-flex; align-items: center; gap: inherit; }
+  :is(.button, .text-link) .motion-label > span[aria-hidden='true'] { display: inline-block; }
 
   @media (hover: hover) and (pointer: fine) {
     a:hover { text-decoration-thickness: 2px; }
@@ -211,34 +212,34 @@
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    :is(.button, .text-link) > span[aria-hidden='true'] {
+    :is(.button, .text-link) .motion-label > span[aria-hidden='true'] {
       transition: transform 160ms cubic-bezier(.2, .7, .3, 1);
     }
     .button { transition: transform 160ms cubic-bezier(.2, .7, .3, 1), background-color 160ms ease-out; }
     .button:active { transform: scale(.98); }
-    :is(.button, .text-link):focus-visible > span[aria-hidden='true'] { transform: translate(2px, -2px); }
+    :is(.button, .text-link):focus-visible .motion-label > span[aria-hidden='true'] { transform: translate(2px, -2px); }
     @media (hover: hover) and (pointer: fine) {
-      :is(.button, .text-link):hover > span[aria-hidden='true'] { transform: translate(2px, -2px); }
+      :is(.button, .text-link):hover .motion-label > span[aria-hidden='true'] { transform: translate(2px, -2px); }
     }
     @media (min-width: 1101px) {
       .desktop-navigation .nav-list a::after { transition: transform 180ms cubic-bezier(.2, .7, .3, 1); }
     }
-    @supports (animation-timeline: view()) and (animation-range: entry 0% cover 35%) {
-      #background-title {
-        /* Keep the timeline tied to the heading, not the full grid row. */
+    @supports (animation-timeline: view()) and (animation-range: entry 0% cover 55%) {
+      main :is(h1, h2, h3, p, dt, dd, .role-tasks li, .motion-label) {
+        /* Animate text blocks once, never their containing sections or list records. */
         align-self: start; transform-origin: left top;
         /* Longhands avoid a minified shorthand containing unsupported view(). */
-        animation-name: profile-heading-grow;
+        animation-name: profile-text-grow;
         animation-duration: 1ms;
         animation-timing-function: linear;
         animation-fill-mode: both;
         animation-timeline: view();
-        animation-range: entry 0% cover 35%;
+        animation-range: entry 0% cover 55%;
       }
     }
   }
-  @keyframes profile-heading-grow {
-    from { transform: scale(.88); }
+  @keyframes profile-text-grow {
+    from { transform: scale(.60); }
     to { transform: scale(1); }
   }
 }

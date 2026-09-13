@@ -16,12 +16,12 @@ import { education, capabilities, pageUrl } from '../data/profile';
       <Image class="avatar" src={portrait} alt="Portrait of Chi-An Chen" width={480} height={663} loading="eager" fetchpriority="high" />
     </div>
     <p class="hero-intro">My background combines computer vision research, deep learning, and applied AI. Through academic research and industry experience, I work across model development, data processing, and AI applications.</p>
-    <a class="button" href={pageUrl('education')}>Explore my education <span aria-hidden="true">↗</span></a>
-    <a class="text-link hero-secondary" href={pageUrl('experience')}>View experience <span aria-hidden="true">↗</span></a>
+    <a class="button" href={pageUrl('education')}><span class="motion-label">Explore my education <span aria-hidden="true">↗</span></span></a>
+    <a class="text-link hero-secondary" href={pageUrl('experience')}><span class="motion-label">View experience <span aria-hidden="true">↗</span></span></a>
   </section>
   <div class="overview">
     <section aria-labelledby="education-title">
-      <div class="section-heading"><h2 id="education-title">Education</h2><a class="text-link" href={pageUrl('education')}>View education <span aria-hidden="true">↗</span></a></div>
+      <div class="section-heading"><h2 id="education-title">Education</h2><a class="text-link" href={pageUrl('education')}><span class="motion-label">View education <span aria-hidden="true">↗</span></span></a></div>
       <ol class="degree-summary plain-list">
         {education.map((degree) => <li>
           <h3>{degree.shortTitle}</h3><p>Computer Science and Information Engineering</p>
@@ -30,7 +30,7 @@ import { education, capabilities, pageUrl } from '../data/profile';
       </ol>
     </section>
     <section aria-labelledby="capabilities-title">
-      <div class="section-heading"><h2 id="capabilities-title">Capabilities</h2><a class="text-link" href={pageUrl('skills')}>Explore my skills <span aria-hidden="true">↗</span></a></div>
+      <div class="section-heading"><h2 id="capabilities-title">Capabilities</h2><a class="text-link" href={pageUrl('skills')}><span class="motion-label">Explore my skills <span aria-hidden="true">↗</span></span></a></div>
       <ul class="capability-list plain-list">{capabilities.map((capability) => <li><h3>{capability.title}</h3><p>{capability.description}</p></li>)}</ul>
     </section>
   </div>
