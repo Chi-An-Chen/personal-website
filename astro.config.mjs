@@ -4,5 +4,6 @@ export default defineConfig({
   site: 'https://chi-an-chen.github.io',
   base: '/personal-website',
   output: 'static',
+  i18n: { defaultLocale: 'en', locales: ['en', { path: 'zh', codes: ['zh-Hant'] }], routing: { prefixDefaultLocale: false } },
   trailingSlash: 'always',
 });

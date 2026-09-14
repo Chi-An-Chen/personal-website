@@ -198,3 +198,7 @@ Home、Research、Experience、About 已完成。工程以四個工作群組呈�
 使用者確認：僅 SLM 數學推理／驗證以合作研究定位，其餘論文研究由本人擔任主要研究者。Computer vision foundation 直接敘述研究工作，不加 primary researcher 身分前綴；移除虛擬試穿的合作定位。此修正不更動書目作者或團隊獎項歸屬，也不等同獨力完成。
 
 About 的 Completed courses & workshops 改為固定展開的語意 section，七筆記錄與 NVIDIA DLI 課程直接可見；保留原本課程完成與專業證照的分類、日期及 courses anchor。
+
+## Bilingual content maintenance
+
+網站共用四個頁面版型，英文為預設，繁中位於 /zh/。英文原文維持在共用元件與既有資料，繁中對照集中於 src/i18n/zh.json；缺少翻譯會阻擋建置。修改敘述須同步兩個語言版本，保留原始書目、正式課程名稱、日期與關聯。中文首頁以陳麒安為主，Chi-An Chen 為輔。完整介面與驗證紀錄見 [i18n-review.md](i18n-review.md)。

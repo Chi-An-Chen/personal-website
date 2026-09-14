@@ -1,3 +1,4 @@
+import type { Locale } from '../i18n';
 export const pages = [
   { id: 'home', label: 'Home', path: '' },
   { id: 'research', label: 'Research', path: 'research/' },
@@ -7,7 +8,7 @@ export const pages = [
 export type PageId = (typeof pages)[number]['id'];
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 export const assetUrl = (path: string) => `${base}${path.replace(/^\//, '')}`;
-export const pageUrl = (id: PageId) => assetUrl(pages.find(page => page.id === id)!.path);
+export const pageUrl = (id: PageId, locale: Locale = 'en') => assetUrl(`${locale === 'zh-Hant' ? 'zh/' : ''}${pages.find(page => page.id === id)!.path}`);
 export const profiles = {
   linkedin: 'https://www.linkedin.com/in/chi-an-chen-993590315',
   github: 'https://github.com/Chi-An-Chen',

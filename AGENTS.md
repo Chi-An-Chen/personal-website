@@ -40,8 +40,12 @@ is a secondary profile link, not the hero's organizing principle.
 Position the person as AI research & engineering, with agricultural VLM first,
 collaborative reasoning and verification second, and CV / engineering extensions.
 Speech research is excluded. Preserve the approved Phase 1 Home and Research
-unless integration or accessibility reveals a concrete defect. Website copy is
-English; design explanations use Traditional Chinese.
+unless integration or accessibility reveals a concrete defect. Website copy is maintained in English and Traditional Chinese; design explanations
+use Traditional Chinese. English remains the default at existing URLs; the four
+Chinese pages live under /zh/. Use shared page components and build-time translations,
+with no client language detection or runtime translation service. Missing Chinese
+translations must fail the build. Keep original publication, model, and credential
+names, stable anchors, and a single source for factual records.
 
 
 ## Primary Design Direction
@@ -173,7 +177,8 @@ and awards. Keep team and individual recognition distinct. Do not count an
 exam score report plus its certificate as separate achievements, or a school
 recognition plus the original competition award as two wins.
 
-Use Chi-An Chen as the display name; preserve author names as supplied in the
+Use Chi-An Chen as the English display name. Chinese pages display 陳麒安 with
+Chi-An Chen as a secondary name. Preserve author names as supplied in the
 chosen publication source. English editorial translations must not replace
 original publication titles or imply an official translation. Source locations,
 private details, discrepancies, and pending confirmations belong in work/.

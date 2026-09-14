@@ -1,7 +1,9 @@
 ---
 import type { ConceptKind } from '../../data/research';
-interface Props { kind: ConceptKind; }
-const { kind } = Astro.props;
+import { translator, type Locale } from '../../i18n';
+interface Props { kind: ConceptKind; locale?: Locale; }
+const { kind, locale = 'en' } = Astro.props;
+const t = translator(locale);
 const steps = kind === 'vlm'
   ? [
     { title: 'Field images', detail: 'Fine-grained crop recognition' },
@@ -17,19 +19,19 @@ const steps = kind === 'vlm'
   ];
 ---
 <figure class:list={['concept', `concept--${kind}`]}>
-  <div class="figure-heading"><span>Method sketch</span><span aria-hidden="true">{kind === 'vlm' ? '01' : kind === 'reasoning' ? '02' : '03'}</span></div>
+  <div class="figure-heading"><span>{t("Method sketch")}</span><span aria-hidden="true">{kind === 'vlm' ? '01' : kind === 'reasoning' ? '02' : '03'}</span></div>
   {kind === 'retrieval' ? <div class="retrieval-flow">
-    <ul class="sources plain-list" aria-label="Information sources" role="list">
-      <li><span class="source-title">Documents</span><span>Retrieved passages</span></li>
-      <li><span class="source-title">User query</span><span>Question & context</span></li>
-      <li><span class="source-title">Structured data</span><span>Relevant records</span></li>
+    <ul class="sources plain-list" aria-label={t("Information sources")} role="list">
+      <li><span class="source-title">{t("Documents")}</span><span>{t("Retrieved passages")}</span></li>
+      <li><span class="source-title">{t("User query")}</span><span>{t("Question & context")}</span></li>
+      <li><span class="source-title">{t("Structured data")}</span><span>{t("Relevant records")}</span></li>
     </ul>
-    <div class="compose"><span class="step-meta">Bring together</span><strong>Evidence<br />composition</strong></div>
-    <div class="response"><span class="step-meta">Generate</span><strong>Response</strong></div>
+    <div class="compose"><span class="step-meta">{t("Bring together")}</span><strong>{t("Evidence")}<br />{t("composition")}</strong></div>
+    <div class="response"><span class="step-meta">{t("Generate")}</span><strong>{t("Response")}</strong></div>
   </div> : <ol class="steps plain-list" role="list">
-    {steps.map((step, i) => <li><span class="step-meta">{String(i + 1).padStart(2, '0')}</span><div><span class="step-title">{step.title}</span><span class="step-detail">{step.detail}</span></div></li>)}
+    {steps.map((step, i) => <li><span class="step-meta">{String(i + 1).padStart(2, '0')}</span><div><span class="step-title">{t(step.title)}</span><span class="step-detail">{t(step.detail)}</span></div></li>)}
   </ol>}
-  <figcaption>{kind === 'vlm' ? 'CROP: a conceptual view of decoupled supervision and inference.' : kind === 'reasoning' ? 'A conceptual view of the study design. Verification is a tested condition.' : 'A conceptual view of how different sources inform an answer.'} <span>Not a literal model architecture.</span></figcaption>
+  <figcaption>{t(kind === 'vlm' ? 'CROP: a conceptual view of decoupled supervision and inference.' : kind === 'reasoning' ? 'A conceptual view of the study design. Verification is a tested condition.' : 'A conceptual view of how different sources inform an answer.')} <span>{t("Not a literal model architecture.")}</span></figcaption>
 </figure>
 <style>
   .concept { margin:0; border-block:1px solid var(--line); padding:22px 0 20px; }

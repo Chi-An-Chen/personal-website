@@ -6,7 +6,8 @@ import config from '../astro.config.mjs';
 // This contract deliberately needs no private sources, credentials, or QA artifacts.
 const primary = ['', 'research', 'experience', 'about'];
 const compatibility = { education: 'about/#education', skills: 'experience/#capabilities', honors: 'about/#recognition', certifications: 'about/#credentials' };
-const routes = [...primary, ...Object.keys(compatibility)];
+const localizedPrimary = [...primary, ...primary.map(route => `zh/${route}`.replace(/\/$/, ''))];
+const routes = [...localizedPrimary, ...Object.keys(compatibility)];
 const root = resolve('dist');
 const base = `${config.base.replace(/\/$/, '')}/`;
 const site = new URL(config.site);
@@ -28,7 +29,7 @@ async function listFiles(directory, relativeTo = root) {
   return files;
 }
 const files = await listFiles(root);
-assert.deepEqual(files.filter(file => file.endsWith('.html')).sort(), [...expectedPages].sort(), 'Expected four primary pages, four compatibility pages, and 404');
+assert.deepEqual(files.filter(file => file.endsWith('.html')).sort(), [...expectedPages].sort(), 'Expected eight bilingual primary pages, four compatibility pages, and 404');
 for (const file of files) assert(
   expectedPages.includes(file) || fontFiles.includes(file) || publicFiles.includes(file) || /^_astro\/[\w.-]+\.css$/.test(file) || /^_astro\/chi-an-chen\.[\w.-]+\.webp$/.test(file),
   `Unexpected publishable file: ${file}`,
@@ -56,13 +57,20 @@ async function checkReference(raw, from, allowExternal = false) {
 }
 const titles = new Set(), descriptions = new Set();
 for (const [file,html] of htmlPages) {
+  const isZh = file.startsWith('zh/');
+  const locale = isZh ? 'zh-Hant' : 'en';
+  const prefix = isZh ? 'zh/' : '';
+  const localFile = isZh ? file.slice(3) : file;
+  const route = localFile === 'index.html' ? '' : localFile.split('/')[0];
+  const isPrimary = primary.includes(route);
+  const localizedUrl = (route, langPrefix = prefix) => `${base}${langPrefix}${route ? `${route}/` : ''}`;
   const meta = (name, attribute='name') => decode(html.match(new RegExp(`<meta\\s+${attribute}="${name}"\\s+content="([^"]+)"`))?.[1] ?? '');
   const title = decode(html.match(/<title>([^<]+)<\/title>/)?.[1] ?? '');
   const description = meta('description');
-  assert(title.length > 10 && description.length >= 70, `Missing/usefully short metadata: ${file}`);
+  assert(title.length > 10 && description.length >= (isZh ? 30 : 70), `Missing/usefully short metadata: ${file}`);
   titles.add(title); descriptions.add(description);
   assert.equal((html.match(/<h1(?:\s|>)/g) || []).length,1,`One h1 required: ${file}`);
-  assert(html.includes('<html lang="en" data-design="editorial">'),`Language or design: ${file}`);
+  assert(html.includes(`<html lang="${locale}" data-design="editorial">`),`Language or design: ${file}`);
   assert(!/<script(?:\s|>)/i.test(html),`Unwanted runtime script: ${file}`);
   assert(!forbiddenContent.test(html),`Non-public content: ${file}`);
   assert(!/\b(?:Whisper|ASR|LoRA)\b|speech adaptation/i.test(html),`Out-of-scope research: ${file}`);
@@ -74,20 +82,26 @@ for (const [file,html] of htmlPages) {
   const footer=html.match(/<footer\b[^]*?<\/footer>/)?.[0];
   assert(header && footer,`Missing navigation: ${file}`);
   const headerPaths=[...header.matchAll(/href="([^"]+)"/g)].map(m=>m[1]);
-  assert.deepEqual(headerPaths,[base,...primary.map(route=>`${base}${route ? `${route}/` : ''}`)],`Four-item navigation: ${file}`);
+  const target = compatibility[route] ?? (isPrimary ? (route ? `${route}/` : '') : '');
+  const languagePaths = [`${base}zh/${target}`, `${base}${target}`];
+  assert.deepEqual(headerPaths,[localizedUrl(''),...primary.map(route=>localizedUrl(route)),...languagePaths],`Navigation and same-page language links: ${file}`);
+  const switcher=header.match(/<nav class="language-switch"[^]*?<\/nav>/)?.[0] ?? '';
+  assert.equal((switcher.match(/aria-current="true"/g)||[]).length,1,`Current language: ${file}`);
+  assert(switcher.includes(`hreflang="${locale}"`),`Language attribute: ${file}`);
   assert(!/<details\b/.test(header),`Unwanted collapsed menu: ${file}`);
   const footerPaths=[...footer.matchAll(/href="([^"]+)"/g)].map(m=>m[1]);
-  assert.deepEqual(footerPaths,[base,...primary.slice(1).map(route=>`${base}${route}/`),...externalLinks],`Final footer: ${file}`);
-  const route = file==='index.html' ? '' : file.split('/')[0];
-  const isPrimary = primary.includes(route);
+  assert.deepEqual(footerPaths,[localizedUrl(''),...primary.slice(1).map(route=>localizedUrl(route)),...externalLinks],`Final footer: ${file}`);
   const canonicalPath = compatibility[route] ? compatibility[route].split('#')[0] : file==='404.html' ? '404.html' : route ? `${route}/` : '';
-  const expectedCanonical=new URL(`${base}${canonicalPath}`,site).href;
+  const expectedCanonical=new URL(`${base}${prefix}${canonicalPath}`,site).href;
   const canonical=decode(html.match(/rel="canonical" href="([^"]+)"/)?.[1] ?? '');
   assert.equal(canonical,expectedCanonical,`Canonical: ${file}`);
   assert.equal(meta('robots'),isPrimary?'index, follow':'noindex, follow',`Index policy: ${file}`);
   for(const attribute of ['og:title','twitter:title']) assert.equal(meta(attribute,attribute.startsWith('og:')?'property':'name'),title,attribute);
   for(const attribute of ['og:description','twitter:description']) assert.equal(meta(attribute,attribute.startsWith('og:')?'property':'name'),description,attribute);
   assert.equal(meta('og:url','property'),canonical);
+  assert.equal(meta('og:locale','property'),isZh ? 'zh_TW' : 'en_US');
+  const alternates=[...html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)"/g)].map(m=>[m[1],decode(m[2])]);
+  assert.deepEqual(alternates,isPrimary ? [['en',new URL(localizedUrl(route,''),site).href],['zh-Hant',new URL(localizedUrl(route,'zh/'),site).href],['x-default',new URL(localizedUrl(route,''),site).href]] : [],`Bilingual alternates: ${file}`);
   assert.equal(meta('twitter:card'),'summary_large_image');
   for(const attribute of ['og:image','twitter:image']) {
     const image=meta(attribute,attribute.startsWith('og:')?'property':'name');
@@ -113,34 +127,69 @@ for(const file of files.filter(file=>/\.(css|svg|xml|txt)$/.test(file))) {
   }
 }
 const sitemap=await readFile(resolve(root,'sitemap.xml'),'utf8');
-assert.deepEqual([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]),primary.map(route=>new URL(`${base}${route ? `${route}/` : ''}`,site).href),'Sitemap includes only primary canonical URLs');
+assert.deepEqual([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]),localizedPrimary.map(route=>new URL(`${base}${route ? `${route}/` : ''}`,site).href),'Sitemap includes only primary canonical URLs');
 assert((await readFile(resolve(root,'robots.txt'),'utf8')).includes(`Sitemap: ${new URL(`${base}sitemap.xml`,site)}`),'Robots sitemap');
 for(const file of fontFiles) assert.equal((await readFile(resolve(root,file))).subarray(0,4).toString(),'wOF2',`Font signature: ${file}`);
 const social=await readFile(resolve(root,'social-preview.png'));
 assert.equal(social.subarray(1,4).toString(),'PNG');assert.equal(social.readUInt32BE(16),1200);assert.equal(social.readUInt32BE(20),630);
-const home=htmlPages.get('index.html'), research=htmlPages.get('research/index.html'), experience=htmlPages.get('experience/index.html'), about=htmlPages.get('about/index.html');
+const zhCopy=JSON.parse(await readFile('src/i18n/zh.json','utf8'));
+assert(Object.values(zhCopy).every(value=>typeof value==='string'&&value.trim()),'Empty translation');
+for(const prefix of ['', 'zh/']) {
+const home=htmlPages.get(`${prefix}index.html`), research=htmlPages.get(`${prefix}research/index.html`), experience=htmlPages.get(`${prefix}experience/index.html`), about=htmlPages.get(`${prefix}about/index.html`);
 function assertOrder(html,values,label) { let previous=-1;for(const value of values) { const position=html.indexOf(value);assert(position>previous,`${label}: ${value}`);previous=position; } }
 assertOrder(home,['id="selected-agricultural-vlm"','id="selected-reasoning-verification"','id="selected-retrieval-applications"'],'Home sequence');
 assertOrder(research,['id="agricultural-vlm"','id="reasoning-verification"','id="visual-research"','id="publications-title"'],'Research sequence');
 assertOrder(experience,['id="roles"','id="engineering-work"','id="retrieval-applications"','id="predictive-modeling"','id="data-pipelines"','id="perception-inference"','id="capabilities"'],'Experience sequence');
 assertOrder(about,['id="education"','id="recognition"','id="credentials"'],'About sequence');
-assert(research.includes('parameter-efficient fine-tuning with DoRA'),'DoRA wording');
-assert(home.includes('In collaborative research')&&research.includes('In collaborative research'),'Collaborative attribution');
+assert(research.includes(prefix ? '最終實作採用 DoRA 進行參數高效率微調' : 'parameter-efficient fine-tuning with DoRA'),'DoRA wording');
+const collaborative=prefix ? '在合作研究中' : 'In collaborative research';
+assert(home.includes(collaborative)&&research.includes(collaborative),'Collaborative attribution');
+assert(!research.includes('As the primary researcher'),'Unwanted role preface');
 const publicationIds=['fahu-mamba','ssiu-net','transformer-mamba-unet','lvit-cb','lvit-cb-itaoi','virtual-try-on-itac'];
 assert.equal((research.match(/data-publication-id=/g)||[]).length,6);
 for(const [i,id] of publicationIds.entries()) assert(research.includes(`id="publication-${i+1}" data-publication-id="${id}"`),`Lost publication: ${id}`);
 const source=await readFile('src/data/publications.ts','utf8');
 const publications=JSON.parse(source.match(/export const publications = (\[[^]*?\]) as const/)[1]);
-for(const paper of publications) for(const key of ['title','authors','venue','year','description']) assert(research.includes(escape(paper[key])) || research.includes(paper[key]),`Missing publication ${paper.id} ${key}`);
+for(const paper of publications) for(const key of ['title','authors','venue','year','description']) {
+  const value=prefix && key==='description' ? zhCopy[paper[key]] : paper[key];
+  assert(value && (research.includes(escape(value)) || research.includes(value)),`Missing publication ${paper.id} ${key}`);
+}
 assert(research.includes('href="#publication-4"')&&research.includes('href="#publication-1"'),'Theme-publication links');
 assert.equal((experience.match(/data-role-id=/g)||[]).length,4,'Verified role count');
 assert.equal((experience.match(/data-engineering-id=/g)||[]).length,4,'Engineering case count');
 assert.equal((about.match(/data-recognition-id=/g)||[]).length,7,'Recognition count');
 assert.equal((about.match(/data-learning-id=/g)||[]).length,13,'Credentials, courses, participation');
-for(const anchor of [3,4,5]) assert(about.includes(`href="${base}research/#publication-${anchor}"`),'Award-publication relationship');
+for(const anchor of [3,4,5]) assert(about.includes(`href="${base}${prefix}research/#publication-${anchor}"`),'Award-publication relationship');
+assert(/<section id="courses"/.test(about) && !/<details[^>]*id="courses"/.test(about),'Courses must remain expanded');
+assert.equal((about.match(/data-learning-id="course-/g)||[]).length,7,'Seven visible courses');
+if(prefix) assert(home.includes('陳麒安') && home.includes('Chi-An Chen'),'Bilingual name');
+}
+// Every primary-page anchor stays addressable in either language.
+for(const route of primary) {
+  const file=route ? `${route}/index.html` : 'index.html';
+  const ids=html=>[...html.matchAll(/\sid="([^"]+)"/g)].map(m=>m[1]).sort();
+  assert.deepEqual(ids(htmlPages.get(`zh/${file}`)),ids(htmlPages.get(file)),`Bilingual anchor parity: ${route}`);
+}
+// Catch untranslated standalone English UI text while retaining formal names.
+const readRecords=async file=>JSON.parse((await readFile(file,'utf8')).match(/= (\[[^]*?\])(?: as const[^]*?)?;/)[1]);
+const originalPapers=await readRecords('src/data/publications.ts');
+const learning=await readRecords('src/data/learning.ts');
+const originalEnglish=new Set([
+  'Chi-An Chen','EN','LinkedIn','GitHub','Getting Started with AI on Jetson Nano',
+  'Best Creative Award · AVSS 2025','Best Conference Papers · IS3C 2025',
+  ...originalPapers.flatMap(p=>[p.title,p.authors,p.venue]),
+  ...learning.flatMap(item=>[item.name,item.issuer]),
+]);
+for(const file of expectedPages.filter(file=>file.startsWith('zh/'))) {
+  const html=htmlPages.get(file).split('<body>')[1].split('</body>')[0];
+  for(const [,raw] of html.matchAll(/>([^<>]+)</g)) {
+    const text=decode(raw).trim();
+    if(/[A-Za-z]/.test(text)&&!/[\u3400-\u9fff]/.test(text)) assert(originalEnglish.has(text),`Untranslated visible text in ${file}: ${text}`);
+  }
+}
 // Public-facing source audit as well as built output; notes and local references are not inputs.
 for(const directory of ['src','public']) for(const file of await listFiles(resolve(directory),resolve(directory))) {
   if(/\.(astro|ts|css|svg|json|txt)$/.test(file)) assert(!forbiddenContent.test(await readFile(resolve(directory,file),'utf8')),`Non-public source in ${directory}/${file}`);
 }
-console.log(`Validated 4 primary pages, 4 compatibility pages, 404, ${checkedLinks} local references, and ${files.length} allowed public files.`);
-console.log('Passed metadata, sitemap, navigation, content order, publication/recognition links, DoRA/collaboration, public-source/output safety, fonts, and stable-content checks.');
+console.log(`Validated 8 bilingual primary pages, 4 compatibility pages, 404, ${checkedLinks} local references, and ${files.length} allowed public files.`);
+console.log('Passed bilingual metadata, hreflang, sitemap, navigation, content order, publication/recognition links, DoRA/collaboration, public-source/output safety, fonts, and stable-content checks.');

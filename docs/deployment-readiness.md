@@ -1,5 +1,7 @@
 # Final redesign — Deployment readiness
 
+> 這份文件保留原始整合階段的驗收紀錄。後續雙語路由、課程固定展開與本輪發佈檢查請見 [繁中／英文版本驗收](i18n-review.md)。
+
 2026-09-14。四頁網站、內容遷移與部署前整合已完成。延續核准的 Research in Practice 基線；本輪沒有提交、推送或部署。
 
 ## A. 最終架構

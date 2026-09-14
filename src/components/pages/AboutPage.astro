@@ -1,0 +1,71 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHeading from '../editorial/PageHeading.astro';
+import DateRange from '../editorial/DateRange.astro';
+import { education, pageUrl as basePageUrl, profiles } from '../../data/profile';
+import { recognition } from '../../data/recognition';
+import { publications } from '../../data/publications';
+import { learningItems } from '../../data/learning';
+const paperFor = (id: string) => {
+  const paper = publications.find(paper => paper.id === id);
+  if (!paper) throw new Error(`Recognition references an unknown publication: ${id}`);
+  return paper;
+};
+const publicationAnchor = (id: string) => `publication-${publications.indexOf(paperFor(id))+1}`;
+
+import { translator, dateLabel, type Locale } from '../../i18n';
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const t = translator(locale);
+const pageUrl = (id: Parameters<typeof basePageUrl>[0]) => basePageUrl(id, locale);
+---
+<Layout locale={locale} title={t("About — Chi-An Chen")} description={t("Chi-An Chen's education at National Ilan University, research recognition, professional credentials, and continued learning in AI and computing.")} currentPage="about">
+  <PageHeading title={t("About")} eyebrow={t("Background & continued learning")} lead={t("A foundation built through study and practice.")}><p>{t("I am a master's student in Computer Science and Information Engineering at National Ilan University, Taiwan. My path has connected academic research, industry–academia projects, and an R&D engineering internship.")}</p><p class="about-introduction">{t("My background in visual computing now extends into language-model reasoning and AI applications. Research, implementation, and continued learning each play a part in that development.")}</p></PageHeading>
+  <nav class="about-index" aria-label={t("About sections")}><a href="#education">{t("Education")}</a><a href="#recognition">{t("Recognition")}</a><a href="#credentials">{t("Credentials & learning")}</a></nav>
+  <section class="about-section" id="education" aria-labelledby="education-title"><div class="section-label"><p class="kicker">{t("Academic background")}</p><h2 id="education-title">{t("Education")}</h2></div>
+    <ol class="degrees plain-list" role="list" aria-label={t("Degrees, most recent first")}>{education.map(degree => <li><p class="record-date"><DateRange locale={locale} {...degree} /></p><div><h3>{t(degree.title)}</h3><p class="institution">{t("National Ilan University, Taiwan")}</p><p>{t(degree.description)}</p></div></li>)}</ol>
+    <a class="editorial-link" href={pageUrl('research')}>{t("Explore my research")} <span aria-hidden="true">↗</span></a>
+  </section>
+  <section class="about-section" id="recognition" aria-labelledby="recognition-title"><div class="section-label"><p class="kicker">{t("Shared work, shared recognition")}</p><h2 id="recognition-title">{t("Recognition")}</h2></div>
+    {([{kind:'paper-team',id:'paper-awards',title:'Paper awards'},{kind:'competition-team',id:'competition-awards',title:'Competition awards'}] as const).map(group => <section class="recognition-group" aria-labelledby={group.id}><h3 id={group.id}>{t(group.title)}</h3><ul class="recognition-list plain-list" role="list">{recognition.filter(item=>item.kind===group.kind).map(item => <li id={item.id} data-recognition-id={item.id}><p class="record-date"><time datetime={item.datetime}>{dateLabel(item.date, locale)}</time></p><div><h4>{t(item.title)}</h4><p class="attribution">{item.kind==='paper-team' ? t("Awarded to the paper’s author team") : `${t("Team award")} · ${t(item.context!)}`}</p>{item.relatedPublication ? <a class="paper-reference" lang={paperFor(item.relatedPublication).lang} href={`${pageUrl('research')}#${publicationAnchor(item.relatedPublication)}`}>{paperFor(item.relatedPublication).title}</a> : <p>{t(item.description!)}</p>}</div></li>)}</ul></section>)}
+  </section>
+  <section class="about-section" id="credentials" aria-labelledby="credentials-title"><div class="section-label"><p class="kicker">{t("Credentials & learning")}</p><h2 id="credentials-title">{t("Continued learning")}</h2></div><p class="section-context">{t("Professional and vendor credentials, followed by completed courses and participation in learning communities.")}</p>
+    <h3 class="learning-heading">{t("Professional & vendor credentials")}</h3><ul class="learning-list plain-list" role="list">{learningItems.filter(item=>item.kind==='credential').map(item=><li data-learning-id={item.id}><div><h4 lang={item.lang ?? 'en'}>{item.name}</h4><p class="issuer">{t(item.issuer)}</p><p>{t(item.focus)}</p></div><p class="learning-date">{dateLabel(item.date, locale)}</p></li>)}</ul>
+    <section id="courses" aria-labelledby="courses-title"><h3 class="learning-heading" id="courses-title">{t("Completed courses & workshops")} <span class="learning-count">· {learningItems.filter(item=>item.kind==='course').length} {t("records")}</span></h3><ul class="learning-list plain-list" role="list">{learningItems.filter(item=>item.kind==='course').map(item=><li data-learning-id={item.id}><div><h4 lang={item.lang ?? 'en'}>{item.name}</h4><p class="issuer">{t(item.issuer)}</p><p>{t(item.focus)}</p>{item.detail && <p class="learning-detail"><span lang="zh-Hant">透過 Jetson Nano 開發人工智慧應用</span> ({dateLabel('Apr 2023', locale)}) {t('and')} “<span lang="en">Getting Started with AI on Jetson Nano</span>” ({dateLabel('Apr 2025', locale)}).</p>}</div><p class="learning-date">{dateLabel(item.date, locale)}</p></li>)}</ul></section>
+    <div class="participation"><h3>{t("Participation & community")}</h3>{learningItems.filter(item=>item.kind==='participation').map(item=><p data-learning-id={item.id}>{t(item.focus)}</p>)}</div>
+  </section>
+  <section class="editorial-continue" aria-labelledby="elsewhere-title"><p class="kicker">{t("Elsewhere & contact")}</p><h2 id="elsewhere-title">{t("Continue the conversation.")}</h2><p>{t("Connect with me on LinkedIn, or explore my public code on GitHub.")}</p><div class="editorial-actions"><a class="editorial-link" href={profiles.linkedin}>LinkedIn <span aria-hidden="true">↗</span></a><a class="editorial-link secondary" href={profiles.github}>GitHub <span aria-hidden="true">↗</span></a></div></section>
+</Layout>
+<style>
+ .about-introduction { margin-top:16px; }
+ .about-index { display:flex; flex-wrap:wrap; gap:4px 40px; padding-block:12px; border-block:1px solid var(--line); }
+ .about-index a { display:inline-flex; align-items:center; min-height:48px; text-decoration:none; }
+ .about-section { padding-block:64px; }
+ .about-section + .about-section { border-top:1px solid var(--line); }
+ .section-label h2 { font-size:clamp(2rem,3.5vw,2.75rem); }
+ .degrees { margin-block:36px 24px; }
+ .degrees li,.recognition-list li { display:grid; grid-template-columns:200px minmax(0,1fr); gap:48px; padding-block:32px; border-top:1px solid var(--line); }
+ .record-date { color:var(--muted); font-size:1rem; }
+ .degrees h3 { font-family:var(--display); font-weight:400; font-size:1.875rem; line-height:1.25; max-width:720px; }
+ .degrees .institution { color:var(--accent); font-size:1rem; margin-block:14px 18px; }
+ .degrees li > div > p:last-child { max-width:760px; color:var(--muted); }
+ .recognition-group { margin-top:40px; }
+ .recognition-group > h3 { font-size:1.25rem; margin-bottom:24px; }
+ .recognition-list h4 { font-family:var(--display); font-weight:400; font-size:1.5rem; line-height:1.3; margin:0; }
+ .recognition-list .attribution { color:var(--muted); font-size:1rem; margin-block:14px; }
+ .recognition-list li > div > p:last-child { max-width:740px; color:var(--muted); }
+ .paper-reference { display:inline-block; line-height:1.6; font-size:1.125rem; padding-block:4px; }
+ .section-context { max-width:740px; color:var(--muted); margin-top:24px; }
+ .learning-heading { margin-block:36px 24px; }
+ .learning-list li { display:grid; grid-template-columns:minmax(0,1fr) 180px; gap:32px; border-top:1px solid var(--line); padding-block:24px; }
+ .learning-list h4 { font-weight:600; font-size:1.125rem; line-height:1.4; margin:0; }
+ .learning-list p { font-size:1rem; color:var(--muted); }
+ .learning-list .issuer { color:var(--accent); margin-block:8px 4px; }
+ .learning-list .learning-date { text-align:right; }
+ .learning-list .learning-detail { margin-top:12px; }
+ .learning-count { color:var(--muted); font-size:1rem; font-weight:400; }
+ .participation { max-width:760px; margin-top:36px; }
+ .participation p { color:var(--muted); margin-top:12px; }
+ @media(max-width:800px) { .degrees li,.recognition-list li { grid-template-columns:minmax(0,1fr); gap:16px; } }
+ @media(max-width:600px) { .about-section { padding-block:44px; } .about-index { gap:0 24px; } .learning-list li { grid-template-columns:minmax(0,1fr); gap:12px; } .learning-list .learning-date { text-align:left; } }
+</style>

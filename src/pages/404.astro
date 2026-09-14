@@ -6,5 +6,6 @@ import { pageUrl, assetUrl } from '../data/profile';
 <Layout title="Page not found — Chi-An Chen" description="This address could not be found. Return to Chi-An Chen's homepage or use the navigation to explore research, experience, and background." canonicalPath={assetUrl('404.html')} noindex>
   <PageHeading title="Page not found" eyebrow="404" lead="Let's find the right page."><p>The address may have changed. Use the navigation above or return to the homepage.</p></PageHeading>
   <p class="return-home"><a class="editorial-link" href={pageUrl('home')}>Return to Home <span aria-hidden="true">↗</span></a></p>
+<p lang="zh-Hant" class="return-home">找不到這個頁面。你可以使用上方導覽，或<a href={pageUrl('home', 'zh-Hant')}>返回中文首頁</a>。</p>
 </Layout>
 <style>.return-home { padding-bottom:80px; }</style>

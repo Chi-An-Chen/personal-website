@@ -91,3 +91,27 @@ html[data-design='editorial'] .small-note { font-size:.9375rem; color:var(--mute
 main :is(section,article,li)[id] { scroll-margin-top:24px; }
 main { overflow-wrap:anywhere; }
 summary { cursor:pointer; color:var(--accent); padding-block:16px; min-height:48px; }
+
+/* Language navigation remains a native link on both desktop and mobile. */
+html[data-design='editorial'] .site-header { display:grid; grid-template-columns:minmax(0,1fr) auto auto; gap:24px; }
+.language-switch { display:flex; align-items:center; gap:10px; font-size:.9375rem; }
+.language-switch a { display:inline-flex; align-items:center; min-height:44px; text-decoration:none; white-space:nowrap; }
+.language-switch a[aria-current='true'] { text-decoration:underline; text-underline-offset:6px; }
+.language-switch > span { color:var(--muted); }
+.wordmark small { display:block; margin-top:4px; font-family:'Source Sans 3',sans-serif; font-size:.8125rem; line-height:1.2; letter-spacing:0; color:var(--muted); }
+html[data-design='editorial'] .name-english { font-family:'Source Serif 4',serif; font-size:1.5rem; color:var(--muted); margin-top:12px; }
+html[lang='zh-Hant'][data-design='editorial'] {
+ --display:'Source Serif 4','Noto Serif TC','Songti TC','PMingLiU',serif;
+ font-family:'Source Sans 3','PingFang TC','Microsoft JhengHei','Noto Sans TC',sans-serif;
+}
+html[lang='zh-Hant'][data-design='editorial'] :is(h1,h2,h3,.research-lead,.page-lead,.step-title) { letter-spacing:0; line-height:1.4; }
+html[lang='zh-Hant'][data-design='editorial'] .hero-person h1 { letter-spacing:.025em; line-height:1.25; }
+html[lang='zh-Hant'][data-design='editorial'] :is(p,dd) { line-height:1.8; }
+html[lang='zh-Hant'][data-design='editorial'] .kicker { letter-spacing:.06em; }
+html[lang='zh-Hant'][data-design='editorial'] .wordmark { letter-spacing:0; }
+@media(max-width:800px) {
+ html[data-design='editorial'] .site-header { grid-template-columns:minmax(0,1fr) auto; gap:0 16px; padding-block:12px; }
+ html[data-design='editorial'] .site-header .desktop-navigation { grid-column:1 / -1; grid-row:2; width:100%; }
+ html[data-design='editorial'] .site-header .language-switch { grid-column:2; grid-row:1; }
+ html[data-design='editorial'] .nav-list { flex-wrap:wrap; }
+}

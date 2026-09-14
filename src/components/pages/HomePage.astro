@@ -1,0 +1,45 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import ConceptFigure from '../editorial/ConceptFigure.astro';
+import portrait from '../../assets/chi-an-chen.webp';
+import { education, pageUrl as basePageUrl } from '../../data/profile';
+import { researchThemes, identityStatement } from '../../data/research';
+import { retrievalWork } from '../../data/engineering';
+const [vlm, reasoning] = researchThemes;
+
+import { translator, dateLabel, type Locale } from '../../i18n';
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const t = translator(locale);
+const pageUrl = (id: Parameters<typeof basePageUrl>[0]) => basePageUrl(id, locale);
+---
+<Layout locale={locale} title={t("Chi-An Chen — AI Research & Engineering")} description={t("Chi-An Chen studies and builds AI systems across language and vision, connecting model adaptation and evaluation with retrieval-based applications.")} currentPage="home">
+  <section class="editorial-hero" aria-labelledby="intro-title">
+    <div class="hero-person">
+      <div><p class="kicker">{t("AI research & engineering")}</p><h1 id="intro-title">{locale === 'en' ? 'Chi-An Chen' : '陳麒安'}</h1>{locale === 'zh-Hant' && <p class="name-english" lang="en">Chi-An Chen</p>}</div>
+      <Image class="editorial-portrait" src={portrait} alt={t("Portrait of Chi-An Chen in graduation attire")} width={480} height={663} loading="eager" fetchpriority="high" />
+    </div>
+    <p class="academic-context">{t("M.S. Student in Computer Science and Information Engineering")}<br /><span>{t("National Ilan University, Taiwan")}</span></p>
+    <p class="identity-statement">{t(identityStatement)}</p>
+    <div class="editorial-actions"><a class="editorial-link" href={pageUrl('research')}>{t("Explore research")} <span aria-hidden="true">↗</span></a><a class="editorial-link secondary" href={pageUrl('experience')}>{t("View experience")} <span aria-hidden="true">↗</span></a></div>
+  </section>
+  <section class="selected-work" aria-labelledby="selected-title">
+    <div class="section-top"><h2 id="selected-title">{t("Selected work")}</h2><p>{t("Research questions. Practical systems.")}</p></div>
+    {[vlm, reasoning].map((theme, i) => <article class:list={['featured-work', i === 1 && 'featured-work--reverse']} id={`selected-${theme.id}`}>
+      <div class="feature-copy"><p class="kicker">0{i + 1} / {t(i === 0 ? 'Graduate research' : 'Collaborative research')}</p><h3>{t(theme.title)}</h3><p class="feature-summary">{t(theme.summary)}</p><p>{t(theme.preview!)}</p><a class="editorial-link" href={`${pageUrl('research')}#${theme.id}`}>{t("Explore the research")} <span aria-hidden="true">↗</span></a></div>
+      <ConceptFigure locale={locale} kind={theme.visual!} />
+    </article>)}
+    <article class="featured-work featured-work--process" id={`selected-${retrievalWork.id}`}>
+      <div class="feature-copy"><p class="kicker">{t("03 / Applied engineering")}</p><h3>{t(retrievalWork.title)}</h3><p class="feature-summary">{t(retrievalWork.summary)}</p><p>{t(retrievalWork.contribution)}</p><a class="editorial-link" href={`${pageUrl('experience')}#ai-engineering`}>{t("View engineering experience")} <span aria-hidden="true">↗</span></a></div>
+      <ConceptFigure locale={locale} kind="retrieval" />
+    </article>
+  </section>
+  <section class="editorial-background" aria-labelledby="background-title"><div><p class="kicker">{t("Background")}</p><h2 id="background-title">{t("Across research")}<br />{t("and practice.")}</h2></div><div>
+    <p class="background-lead">{t("I am an R&D Engineer Intern at PAPAGO! My previous roles at National Ilan University include computer vision research and AI development through industry–academia collaboration.")}</p>
+    <ul class="education-lines plain-list" role="list">{education.map(degree => <li><span>{t(degree.shortTitle)}</span><span>{dateLabel(degree.startLabel, locale)}–{dateLabel(degree.endLabel, locale)}</span></li>)}</ul>
+    <p class="small-note">{t("Computer Science and Information Engineering · National Ilan University")}</p>
+    <div class="editorial-actions"><a class="editorial-link" href={pageUrl('experience')}>{t("Experience")} <span aria-hidden="true">↗</span></a><a class="editorial-link" href={`${pageUrl('about')}#education`}>{t("Education")} <span aria-hidden="true">↗</span></a></div>
+  </div></section>
+  <section class="editorial-continue" aria-labelledby="continue-title"><p class="kicker">{t("Continue")}</p><h2 id="continue-title">{t("A closer look.")}</h2><p>{t("Explore the questions behind the work, or get in touch.")}</p><div class="editorial-actions"><a class="editorial-link" href={pageUrl('research')}>{t("Research")} <span aria-hidden="true">↗</span></a><a class="editorial-link" href="https://www.linkedin.com/in/chi-an-chen-993590315">{t("Connect on LinkedIn")} <span aria-hidden="true">↗</span></a></div></section>
+</Layout>

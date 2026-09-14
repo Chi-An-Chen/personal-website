@@ -2,16 +2,23 @@
 import '../styles/global.css';
 import '../styles/editorial.css';
 import { pages, pageUrl, assetUrl, profiles, type PageId } from '../data/profile';
+import { translator, type Locale } from '../i18n';
 interface Props {
   title: string; description: string; currentPage?: PageId;
-  canonicalPath?: string; noindex?: boolean;
+  canonicalPath?: string; noindex?: boolean; locale?: Locale;
+  languageTarget?: PageId; languageAnchor?: string;
 }
-const { title, description, currentPage, canonicalPath, noindex = false } = Astro.props;
-const canonical = new URL(canonicalPath ?? pageUrl(currentPage ?? 'home'), Astro.site!);
+const { title, description, currentPage, canonicalPath, noindex = false, locale = 'en', languageTarget, languageAnchor = '' } = Astro.props;
+const t = translator(locale);
+const canonical = new URL(canonicalPath ?? pageUrl(currentPage ?? 'home', locale), Astro.site!);
 const socialImage = new URL(assetUrl('social-preview.png'), Astro.site!);
+const targetPage = languageTarget ?? currentPage ?? 'home';
+const languageUrl = (next: Locale) => `${pageUrl(targetPage, next)}${languageAnchor ? `#${languageAnchor}` : ''}`;
+const displayName = locale === 'en' ? 'Chi-An Chen' : '陳麒安';
+const homeLabel = locale === 'en' ? 'Chi-An Chen — Home' : '陳麒安 Chi-An Chen — 首頁';
 ---
 <!doctype html>
-<html lang="en" data-design="editorial">
+<html lang={locale} data-design="editorial">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -19,8 +26,15 @@ const socialImage = new URL(assetUrl('social-preview.png'), Astro.site!);
     <meta name="theme-color" content="#f7f5f0" />
     <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow'} />
     <link rel="canonical" href={canonical} />
+    {!noindex && currentPage && <>
+      <link rel="alternate" hreflang="en" href={new URL(pageUrl(currentPage, 'en'), Astro.site!)} />
+      <link rel="alternate" hreflang="zh-Hant" href={new URL(pageUrl(currentPage, 'zh-Hant'), Astro.site!)} />
+      <link rel="alternate" hreflang="x-default" href={new URL(pageUrl(currentPage, 'en'), Astro.site!)} />
+    </>}
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Chi-An Chen" />
+    <meta property="og:site_name" content={locale === 'en' ? displayName : '陳麒安 Chi-An Chen'} />
+    <meta property="og:locale" content={locale === 'en' ? 'en_US' : 'zh_TW'} />
+    <meta property="og:locale:alternate" content={locale === 'en' ? 'zh_TW' : 'en_US'} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
@@ -28,30 +42,35 @@ const socialImage = new URL(assetUrl('social-preview.png'), Astro.site!);
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:alt" content="Chi-An Chen — AI research & engineering. Language, vision, and the systems that connect them." />
+    <meta property="og:image:alt" content={t('Chi-An Chen — AI research & engineering. Language, vision, and the systems that connect them.')} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImage} />
-    <meta name="twitter:image:alt" content="Chi-An Chen — AI research & engineering" />
+    <meta name="twitter:image:alt" content={t('Chi-An Chen — AI research & engineering')} />
     <link rel="icon" type="image/svg+xml" href={assetUrl('favicon.svg')} />
     <title>{title}</title>
   </head>
   <body>
-    <a class="skip-link" href="#main">Skip to content</a>
+    <a class="skip-link" href="#main">{t('Skip to content')}</a>
     <header class="site-header container">
-      <a class="wordmark" href={pageUrl('home')} aria-label="Chi-An Chen — Home">Chi-An Chen<span aria-hidden="true">.</span></a>
-      <nav class="desktop-navigation" aria-label="Main navigation"><ul class="nav-list plain-list" role="list">
-        {pages.map(page => <li><a href={pageUrl(page.id)} aria-current={currentPage === page.id ? 'page' : undefined}>{page.label}</a></li>)}
+      <a class="wordmark" href={pageUrl('home', locale)} aria-label={homeLabel}>{displayName}<span aria-hidden="true">.</span>{locale === 'zh-Hant' && <small lang="en">Chi-An Chen</small>}</a>
+      <nav class="desktop-navigation" aria-label={t('Main navigation')}><ul class="nav-list plain-list" role="list">
+        {pages.map(page => <li><a href={pageUrl(page.id, locale)} aria-current={currentPage === page.id ? 'page' : undefined}>{t(page.label)}</a></li>)}
       </ul></nav>
+      <nav class="language-switch" aria-label={t('Language')}>
+        <a href={languageUrl('zh-Hant')} lang="zh-Hant" hreflang="zh-Hant" aria-label="切換至繁體中文" aria-current={locale === 'zh-Hant' ? 'true' : undefined}>繁中</a>
+        <span aria-hidden="true">/</span>
+        <a href={languageUrl('en')} lang="en" hreflang="en" aria-label="Switch to English" aria-current={locale === 'en' ? 'true' : undefined}>EN</a>
+      </nav>
     </header>
     <main id="main" class="container" tabindex="-1"><slot /></main>
     <footer class="site-footer container">
-      <div class="footer-identity"><a class="wordmark" href={pageUrl('home')} aria-label="Chi-An Chen — Home">Chi-An Chen</a><p>AI research & engineering.</p></div>
-      <nav aria-label="Footer navigation"><ul class="footer-links plain-list" role="list">
-        {pages.filter(page => page.id !== 'home').map(page => <li><a href={pageUrl(page.id)} aria-current={currentPage === page.id ? 'page' : undefined}>{page.label}</a></li>)}
-        <li><a href={profiles.linkedin}>LinkedIn <span aria-hidden="true">↗</span></a></li>
-        <li><a href={profiles.github}>GitHub <span aria-hidden="true">↗</span></a></li>
+      <div class="footer-identity"><a class="wordmark" href={pageUrl('home', locale)} aria-label={homeLabel}>{displayName}{locale === 'zh-Hant' && <small lang="en">Chi-An Chen</small>}</a><p>{t('AI research & engineering.')}</p></div>
+      <nav aria-label={t('Footer navigation')}><ul class="footer-links plain-list" role="list">
+        {pages.filter(page => page.id !== 'home').map(page => <li><a href={pageUrl(page.id, locale)} aria-current={currentPage === page.id ? 'page' : undefined}>{t(page.label)}</a></li>)}
+        <li><a href={profiles.linkedin} lang="en">LinkedIn <span aria-hidden="true">↗</span></a></li>
+        <li><a href={profiles.github} lang="en">GitHub <span aria-hidden="true">↗</span></a></li>
       </ul></nav>
     </footer>
   </body>

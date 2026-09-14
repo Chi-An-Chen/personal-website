@@ -1,5 +1,6 @@
 ---
-interface Props { start: string; startLabel: string; end: string | null; endLabel: string; }
-const { start, startLabel, end, endLabel } = Astro.props;
+import { dateLabel, type Locale } from '../../i18n';
+interface Props { locale?: Locale; start: string; startLabel: string; end: string | null; endLabel: string; }
+const { start, startLabel, end, endLabel, locale = 'en' } = Astro.props;
 ---
-<time datetime={start}>{startLabel}</time><span aria-hidden="true"> — </span><span class="sr-only"> to </span>{end ? <time datetime={end}>{endLabel}</time> : endLabel}
+<time datetime={start}>{dateLabel(startLabel, locale)}</time><span aria-hidden="true"> — </span><span class="sr-only">{locale === 'en' ? ' to ' : ' 至 '}</span>{end ? <time datetime={end}>{dateLabel(endLabel, locale)}</time> : dateLabel(endLabel, locale)}
