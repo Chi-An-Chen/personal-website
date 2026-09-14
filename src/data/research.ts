@@ -40,7 +40,7 @@ export const researchThemes: ResearchTheme[] = [
     shortTitle: 'Computer vision', kind: 'research',
     summary: 'Learning discriminative vein patterns and modeling tumor boundaries through task-specific visual architectures.',
     question: 'How can model structure be adapted to the different demands of biometric recognition and medical image segmentation?',
-    contribution: 'As the primary researcher, I investigate competitive feature selection for finger vein recognition and complementary state space, linear-attention, and frequency-aware approaches to breast tumor segmentation.',
+    contribution: 'My computer vision research explores competitive feature selection for finger vein recognition and complementary state space, linear-attention, and frequency-aware approaches to breast tumor segmentation.',
     methods: ['Competitive feature selection', 'Vision transformers', 'State space models', 'Linear attention', 'Frequency-domain modeling'],
     publicationIds: ['fahu-mamba', 'ssiu-net', 'transformer-mamba-unet', 'lvit-cb', 'lvit-cb-itaoi'],
   },

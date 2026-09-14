@@ -84,7 +84,7 @@ The study distinguishes answer accuracy from format adherence, output length, an
 
 ### Efficient visual recognition and medical image segmentation
 
-As the primary researcher, I investigate competitive feature selection for finger vein recognition and complementary state space, linear-attention, and frequency-aware approaches to breast tumor segmentation.
+My computer vision research explores competitive feature selection for finger vein recognition and complementary state space, linear-attention, and frequency-aware approaches to breast tumor segmentation.
 
 LViT-CB uses competition across channel and spatial dimensions to emphasize discriminative vein patterns. FAHU-Mamba combines selective scanning with learnable frequency reweighting; SSIU-Net combines state space blocks and Mamba-inspired linear attention. The segmentation studies evaluate breast tumor structure in DCE-MRI on BreastDM.
 
@@ -195,6 +195,6 @@ Home、Research、Experience、About 已完成。工程以四個工作群組呈�
 
 ## Research role and learning visibility clarification
 
-使用者確認：僅 SLM 數學推理／驗證以合作研究定位，其餘論文研究由本人擔任主要研究者。Computer vision foundation 明確使用 primary researcher；移除虛擬試穿的合作定位。此修正不更動書目作者或團隊獎項歸屬，也不等同獨力完成。
+使用者確認：僅 SLM 數學推理／驗證以合作研究定位，其餘論文研究由本人擔任主要研究者。Computer vision foundation 直接敘述研究工作，不加 primary researcher 身分前綴；移除虛擬試穿的合作定位。此修正不更動書目作者或團隊獎項歸屬，也不等同獨力完成。
 
 About 的 Completed courses & workshops 改為固定展開的語意 section，七筆記錄與 NVIDIA DLI 課程直接可見；保留原本課程完成與專業證照的分類、日期及 courses anchor。
