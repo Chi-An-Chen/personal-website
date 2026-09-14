@@ -21,7 +21,7 @@ const [vlm, reasoning] = researchThemes;
   <section class="selected-work" aria-labelledby="selected-title">
     <div class="section-top"><h2 id="selected-title">Selected work</h2><p>Research questions. Practical systems.</p></div>
     {[vlm, reasoning].map((theme, i) => <article class:list={['featured-work', i === 1 && 'featured-work--reverse']} id={`selected-${theme.id}`}>
-      <div class="feature-copy"><p class="kicker">0{i + 1} / {i === 0 ? 'Graduate research' : 'Collaborative research'}</p><h3>{theme.title}</h3><p class="feature-summary">{theme.summary}</p><p>{i === 0 ? 'My graduate work connects task-specific data preparation, model adaptation, and agricultural visual question answering.' : 'In collaborative research, I work on reasoning-data generation and mathematical evaluation, with attention to how answers can be checked.'}</p><a class="editorial-link" href={`${pageUrl('research')}#${theme.id}`}>Explore the research <span aria-hidden="true">↗</span></a></div>
+      <div class="feature-copy"><p class="kicker">0{i + 1} / {i === 0 ? 'Graduate research' : 'Collaborative research'}</p><h3>{theme.title}</h3><p class="feature-summary">{theme.summary}</p><p>{theme.preview}</p><a class="editorial-link" href={`${pageUrl('research')}#${theme.id}`}>Explore the research <span aria-hidden="true">↗</span></a></div>
       <ConceptFigure kind={theme.visual!} />
     </article>)}
     <article class="featured-work featured-work--process" id={`selected-${retrievalWork.id}`}>

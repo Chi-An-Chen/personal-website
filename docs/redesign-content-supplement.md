@@ -2,33 +2,37 @@
 
 2026-09-14 · 四頁內容整合完成。Home／Research 保留核准基線，Experience／About 已使用本文件的公開安全敘述與既有核對資料。見 [部署準備驗收](deployment-readiness.md)。
 
-本文件提供 [redesign-plan.md](redesign-plan.md) 的英文候選文案。完整個人 repo 盤點後，以新版 plan 的定位、選材與頁面配置為準。人物、教育與實際角色仍是網站基礎；研究與工程案例不以公開程式庫為收錄條件。以下各節的英文可用於前台，中文為編輯規格。
+本文件提供 [redesign-plan.md](redesign-plan.md) 的英文文案基線。2026-09-14 研究敘述已依使用者提供的論文更新：以研究問題、監督設計、對照實驗與方法差異為主，不再以程式庫流程概述代替學術內容。人物、教育與實際角色仍是網站基礎；研究與工程案例不以公開程式庫為收錄條件。以下各節的英文可用於前台，中文為編輯規格。
 
 ## 定位與首頁順序
 
-上一版只突出輕量辨識與醫學分割，無法完整呈現目前研究廣度。完整盤點後，研究採三個主題：語言模型推理與驗證、視覺語言模型、視覺辨識／分割與生成。工程涵蓋檢索與文件 AI、預測建模與 NLP、資料流程、應用感知與推論整合。
+上一版只突出輕量辨識與醫學分割，無法完整呈現目前研究廣度。完整盤點後，研究依序採三個主題：農業視覺語言模型、語言模型推理與驗證、視覺辨識／分割。生成研究維持補充段落。工程涵蓋檢索與文件 AI、預測建模與 NLP、資料流程、應用感知與推論整合。
 
 首頁仍先介紹 Chi-An Chen；接著用農業 VLM 與語言模型推理兩個研究預覽、一個檢索應用案例表達新的內容重心。既有 CV 在研究概覽中明確保留，並在 Research 頁展開。首頁不需要將所有工程案例展開，也不增加 repository 卡片。
 
 ### Homepage introduction
 
-I study and build AI systems across language and vision. My work spans model adaptation and evaluation, retrieval-based applications, and the data and inference workflows that connect them.
+I study and build AI systems across language and vision. My research examines visual grounding and reasoning under limited model capacity, alongside applied work in retrieval-based systems and AI engineering.
 
 ### Research overview
 
-My research spans language-model reasoning, vision-language understanding, and visual recognition and segmentation. My work includes parameter-efficient adaptation, task-specific data preparation, and model evaluation.
+My research examines how supervision and model structure shape visual grounding and reasoning under computational constraints. I study fine-grained agricultural recognition, the costs and benefits of structured mathematical reasoning, and task-specific architectures for biometric recognition and medical image segmentation.
 
-第二句整理跨研究主題的方法經驗，不代表每個專案都有相同驗證方法，亦不宣稱已達成可靠性或效能提升。
+概覽以研究問題連接三個主題；具體方法與結論適用範圍在各段說明。
 
 ### Homepage research previews
 
 以下是預覽文案庫，首頁精選 VLM 與 reasoning；CV 由概覽與主題索引引導。
 
 **Vision-language models for agricultural understanding**\
-Exploring plant disease and pest recognition through visual descriptions, reasoning, and self-checking.
+Studying how much reasoning small vision-language models need for fine-grained agricultural recognition.
+
+My graduate research explores CROP: learning from visual descriptions, bounded reasoning, and direct class labels while keeping inference concise.
 
 **Reasoning and verification in small language models**\
-In collaborative research, I study concise reasoning and verification-oriented workflows for language models with limited capacity.
+Examining the cost of structured reasoning and the conditional value of verification in compact language models.
+
+In collaborative research, I examine how reasoning formats affect accuracy and when explicit verification helps models recover from errors.
 
 **A foundation in computer vision**\
 Research experience in lightweight biometric recognition and breast tumor segmentation.
@@ -44,23 +48,45 @@ My applied work includes admissions-counseling systems that combine document ret
 
 ### Vision-language models for agricultural understanding
 
-I explore lightweight vision-language models for plant disease and pest recognition. This work includes preparing data for classification, visual description, and reasoning tasks; experimenting with parameter-efficient fine-tuning; and evaluating models on agricultural visual question-answering tasks. I also investigate self-checking prompts that ask models to relate their answers to visible image evidence.
+**Research question**
 
-**Methods in context**\
-Vision-language models, parameter-efficient fine-tuning with DoRA, multi-task data preparation, visual question answering, and evaluation workflows.
+Can concise, visually grounded supervision support fine-grained crop recognition more effectively than long-form reasoning in a small multimodal model?
+
+**My contribution**
+
+My graduate research investigates the reasoning length–accuracy trade-off in small multimodal models through CROP, the Constrained Reasoning and Observation Pipeline. My work connects task-specific supervision, model adaptation, and evaluation of plant disease and pest recognition under field-image conditions.
+
+**Approach**
+
+CROP separates supervision into diagnosis-free visual descriptions, bounded rationales grounded in visible symptoms, and direct class labels. These complementary targets are combined in single-stage supervised fine-tuning of Qwen3-VL-2B-Instruct; inference supports either a class label alone or a short rationale followed by the label.
+
+The study evaluates supervision mixtures and reasoning formats through ablations, classification and cross-domain evaluation, and hardware profiling. The final implementation uses parameter-efficient fine-tuning with DoRA.
+
+DoRA 保留為使用者確認的最終實作設定。CROP 的視覺描述、bounded reasoning 與 direct labeling 是共同訓練的互補目標，不是推論時必須依序執行的三步。早期 long-form CoT／self-checking 與最終 CROP 分開描述。
 
 ### Reasoning and verification in small language models
 
-In collaborative research, I study concise reasoning and verification-oriented workflows for small language models. This work includes training-data generation and evaluation pipelines for mathematical reasoning, with attention to how model responses can be checked rather than judged only by their length or fluency.
+**Research question**
 
-**Methods in context**\
-Small language models, reasoning-data generation, answer verification, mathematical reasoning, and inference evaluation.
+When do arithmetic and verification cues justify their cost under limited model capacity and inference budgets?
 
-本項為同一合作研究，不依不同作者保管的程式碼拆成多項成果。候選文案使用 collaborated / collaborative research，不推定獨立完成全流程。
+**My contribution**
+
+In collaborative research, I investigate how output structure affects mathematical reasoning in compact language models. My work on training-data construction and evaluation contributes to VeriTool, a study of schema costs, answer-format adherence, and verification-associated error recovery.
+
+**Approach**
+
+A matched-data ablation compares compact chain-of-thought, arithmetic markup, and arithmetic markup with an explicit verification segment, holding source examples, training, and decoding fixed for Qwen3-0.6B. Error-injection experiments separately examine recovery across corruption types and compact-model configurations.
+
+The study distinguishes answer accuracy from format adherence, output length, and inference time. Verification benefits depend on the error and model configuration; a complementary Efficient CoT pipeline explores token-budget-filtered supervision, with its data and training differences considered when interpreting results.
+
+同一合作研究維持整體歸屬。Matched-data ablation 與 Efficient CoT 的跨流程比較分開解讀；不宣稱驗證必然提升正確率，也不將 arithmetic markup 描述成即時外部工具回饋。
 
 ### Efficient visual recognition and medical image segmentation
 
-My computer vision research includes lightweight vision transformers for finger vein recognition and U-Net-based approaches to breast tumor segmentation. These projects explore different modeling approaches for visual recognition and medical imaging, including transformer and state space components.
+My coauthored computer vision research examines competitive feature selection for finger vein recognition and complementary state space, linear-attention, and frequency-aware approaches to breast tumor segmentation.
+
+LViT-CB uses competition across channel and spatial dimensions to emphasize discriminative vein patterns. FAHU-Mamba combines selective scanning with learnable frequency reweighting; SSIU-Net combines state space blocks and Mamba-inspired linear attention. The segmentation studies evaluate breast tumor structure in DCE-MRI on BreastDM.
 
 原有研究可拆為兩個案例呈現；不得把不同方法畫成已證明逐代提升的性能演化圖。
 
@@ -145,12 +171,12 @@ Image and video processing, model evaluation, inference integration, APIs, and O
 
 可替換碩士段中目前過短的農業 VLM 敘述；保留原學位、實驗室與導師資訊。
 
-My graduate research explores agricultural vision-language models, including plant disease and pest recognition, visual question answering, and reasoning-oriented model adaptation. I also work on collaborative research into reasoning and verification for small language models.
+My graduate research examines fine-grained agricultural recognition through decoupled supervision and bounded reasoning in small multimodal models. I also contribute to collaborative research on reasoning-schema costs and the conditional value of verification in compact language models.
 
 ## Visual treatment and content boundaries
 
-- 農業 VLM：用「image → description / reasoning → answer and checking」概念圖，不冒充精確模型架構。真實輸入／輸出圖片另依可公開範圍選取。
-- 推理與驗證：用「problem → concise response → checking」方法示意；不顯示未驗證的 token 節省率、正確率或獲接受狀態。
+- 農業 VLM：用「field images → three supervision signals → joint fine-tuning → two inference modes」概念圖，不冒充精確模型架構。真實輸入／輸出圖片另依可公開範圍選取。
+- 推理與驗證：用「matched problems → compare output schemas → controlled comparison → assess costs and benefits」研究設計示意；不顯示未驗證的 token 節省率、正確率或獲接受狀態。
 - RAG：用文件與結構化資料進入回答流程的高層圖解，不嵌入私人 API 或產品畫面。
 - 資料工程：用來源、清理、空間對照與輸出之間的關係呈現；不需要可互動地圖或真實資料下載。
 - 所有概念圖皆附簡短文字解讀。沒有正式原圖時仍可先用概念圖完成內容原型。
@@ -160,3 +186,9 @@ My graduate research explores agricultural vision-language models, including pla
 ## Implementation status
 
 Home、Research、Experience、About 已完成。工程以四個工作群組呈現，能力連回實際案例；About 保留兩筆學位、七筆團隊獎項、五筆證照、七筆課程與參與紀錄。原始出版品未改寫，語音研究不納入。四個舊網址已轉為相容頁；完整驗收與尚未執行的正式部署操作見 [deployment-readiness.md](deployment-readiness.md)。
+
+## Paper-based copy revision
+
+本輪僅精修 Home／Research 文案及兩張方法示意，維持既有架構、研究排序與六筆書目。My contribution 以既有個人工作範圍連接論文研究目的；Approach 說明研究整體方法，不由作者順序推定所有工作的個人分工。原始論文、頁碼對照與版本差異只留在已忽略的本機工作目錄。未新增論文附件、數值績效或出版狀態。
+
+本輪驗證：`npm run check`、`npm run build`、`node scripts/check-build.mjs` 通過；瀏覽器確認 Home／Research 在 1280、390、320 px 無橫向溢出，200% 文字放大、無 JavaScript 與原生 details 鍵盤操作可用。此為文案與方法示意的針對性驗證，完整網站的既有跨瀏覽器驗收紀錄仍保留於 deployment-readiness.md。

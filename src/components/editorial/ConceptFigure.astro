@@ -3,8 +3,18 @@ import type { ConceptKind } from '../../data/research';
 interface Props { kind: ConceptKind; }
 const { kind } = Astro.props;
 const steps = kind === 'vlm'
-  ? ['Image', 'Visual observation', 'Reasoning', 'Answer', 'Evidence-aware checking']
-  : ['Problem', 'Concise reasoning', 'Verification', 'Final response'];
+  ? [
+    { title: 'Field images', detail: 'Fine-grained crop recognition' },
+    { title: 'Three supervision signals', detail: 'Visual description · Bounded reasoning · Direct labeling' },
+    { title: 'Joint fine-tuning', detail: 'Complementary targets in one training stage' },
+    { title: 'Two inference modes', detail: 'Label only, or short rationale + label' },
+  ]
+  : [
+    { title: 'Matched problems', detail: 'Shared examples across three conditions' },
+    { title: 'Compare output schemas', detail: 'Compact CoT · Arithmetic markup · Added verification' },
+    { title: 'Controlled comparison', detail: 'Fixed training and decoding' },
+    { title: 'Assess costs & benefits', detail: 'Accuracy and format; separate error-recovery experiments' },
+  ];
 ---
 <figure class:list={['concept', `concept--${kind}`]}>
   <div class="figure-heading"><span>Method sketch</span><span aria-hidden="true">{kind === 'vlm' ? '01' : kind === 'reasoning' ? '02' : '03'}</span></div>
@@ -17,9 +27,9 @@ const steps = kind === 'vlm'
     <div class="compose"><span class="step-meta">Bring together</span><strong>Evidence<br />composition</strong></div>
     <div class="response"><span class="step-meta">Generate</span><strong>Response</strong></div>
   </div> : <ol class="steps plain-list" role="list">
-    {steps.map((step, i) => <li><span class="step-meta">{String(i + 1).padStart(2, '0')}</span><span class="step-title">{step}</span></li>)}
+    {steps.map((step, i) => <li><span class="step-meta">{String(i + 1).padStart(2, '0')}</span><div><span class="step-title">{step.title}</span><span class="step-detail">{step.detail}</span></div></li>)}
   </ol>}
-  <figcaption>{kind === 'vlm' ? 'A conceptual path from visual evidence to a checked answer.' : kind === 'reasoning' ? 'A conceptual workflow for reasoning and answer checking.' : 'A conceptual view of how different sources inform an answer.'} <span>Not a literal model architecture.</span></figcaption>
+  <figcaption>{kind === 'vlm' ? 'CROP: a conceptual view of decoupled supervision and inference.' : kind === 'reasoning' ? 'A conceptual view of the study design. Verification is a tested condition.' : 'A conceptual view of how different sources inform an answer.'} <span>Not a literal model architecture.</span></figcaption>
 </figure>
 <style>
   .concept { margin:0; border-block:1px solid var(--line); padding:22px 0 20px; }
@@ -28,7 +38,10 @@ const steps = kind === 'vlm'
   .steps li { position:relative; display:flex; align-items:baseline; gap:22px; padding:14px 0; }
   .steps li + li::before { content:''; position:absolute; top:-4px; left:8px; height:12px; width:1px; background:var(--line); }
   .step-meta { color:var(--muted); font-size:.8125rem; }
+  .steps .step-meta { flex:0 0 16px; white-space:nowrap; }
+  .steps li > div { min-width:0; }
   .step-title { font-family:var(--display); color:var(--ink); font-size:1.625rem; line-height:1.2; }
+  .step-detail { display:block; margin-top:8px; color:var(--muted); font-size:.875rem; line-height:1.5; }
   .steps li:last-child .step-title { color:var(--accent); }
   .concept--reasoning .steps { padding-block:28px; }
   .concept--reasoning .steps li { padding-block:18px; }
