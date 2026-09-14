@@ -13,7 +13,7 @@ const paperFor = (id: string) => {
 };
 const publicationAnchor = (id: string) => `publication-${publications.indexOf(paperFor(id))+1}`;
 ---
-<Layout title="About — Chi-An Chen" description="Chi-An Chen's education at National Ilan University, collaborative research recognition, professional credentials, and continued learning in AI and computing." currentPage="about">
+<Layout title="About — Chi-An Chen" description="Chi-An Chen's education at National Ilan University, research recognition, professional credentials, and continued learning in AI and computing." currentPage="about">
   <PageHeading title="About" eyebrow="Background & continued learning" lead="A foundation built through study and practice."><p>I am a master's student in Computer Science and Information Engineering at National Ilan University, Taiwan. My path has connected academic research, industry–academia projects, and an R&D engineering internship.</p><p class="about-introduction">My background in visual computing now extends into language-model reasoning and AI applications. Research, implementation, and continued learning each play a part in that development.</p></PageHeading>
   <nav class="about-index" aria-label="About sections"><a href="#education">Education</a><a href="#recognition">Recognition</a><a href="#credentials">Credentials & learning</a></nav>
   <section class="about-section" id="education" aria-labelledby="education-title"><div class="section-label"><p class="kicker">Academic background</p><h2 id="education-title">Education</h2></div>
@@ -25,7 +25,7 @@ const publicationAnchor = (id: string) => `publication-${publications.indexOf(pa
   </section>
   <section class="about-section" id="credentials" aria-labelledby="credentials-title"><div class="section-label"><p class="kicker">Credentials & learning</p><h2 id="credentials-title">Continued learning</h2></div><p class="section-context">Professional and vendor credentials, followed by completed courses and participation in learning communities.</p>
     <h3 class="learning-heading">Professional & vendor credentials</h3><ul class="learning-list plain-list" role="list">{learningItems.filter(item=>item.kind==='credential').map(item=><li data-learning-id={item.id}><div><h4>{item.name}</h4><p class="issuer">{item.issuer}</p><p>{item.focus}</p></div><p class="learning-date">{item.date}</p></li>)}</ul>
-    <details class="learning-details" id="courses"><summary>Completed courses & workshops · {learningItems.filter(item=>item.kind==='course').length} records</summary><ul class="learning-list plain-list" role="list">{learningItems.filter(item=>item.kind==='course').map(item=><li data-learning-id={item.id}><div><h4 lang={item.lang ?? 'en'}>{item.name}</h4><p class="issuer">{item.issuer}</p><p>{item.focus}</p>{item.detail && <p class="learning-detail"><span lang="zh-Hant">透過 Jetson Nano 開發人工智慧應用</span> (Apr 2023) and “Getting Started with AI on Jetson Nano” (Apr 2025).</p>}</div><p class="learning-date">{item.date}</p></li>)}</ul></details>
+    <section id="courses" aria-labelledby="courses-title"><h3 class="learning-heading" id="courses-title">Completed courses & workshops <span class="learning-count">· {learningItems.filter(item=>item.kind==='course').length} records</span></h3><ul class="learning-list plain-list" role="list">{learningItems.filter(item=>item.kind==='course').map(item=><li data-learning-id={item.id}><div><h4 lang={item.lang ?? 'en'}>{item.name}</h4><p class="issuer">{item.issuer}</p><p>{item.focus}</p>{item.detail && <p class="learning-detail"><span lang="zh-Hant">透過 Jetson Nano 開發人工智慧應用</span> (Apr 2023) and “Getting Started with AI on Jetson Nano” (Apr 2025).</p>}</div><p class="learning-date">{item.date}</p></li>)}</ul></section>
     <div class="participation"><h3>Participation & community</h3>{learningItems.filter(item=>item.kind==='participation').map(item=><p data-learning-id={item.id}>{item.focus}</p>)}</div>
   </section>
   <section class="editorial-continue" aria-labelledby="elsewhere-title"><p class="kicker">Elsewhere & contact</p><h2 id="elsewhere-title">Continue the conversation.</h2><p>Connect with me on LinkedIn, or explore my public code on GitHub.</p><div class="editorial-actions"><a class="editorial-link" href={profiles.linkedin}>LinkedIn <span aria-hidden="true">↗</span></a><a class="editorial-link secondary" href={profiles.github}>GitHub <span aria-hidden="true">↗</span></a></div></section>
@@ -57,9 +57,7 @@ const publicationAnchor = (id: string) => `publication-${publications.indexOf(pa
  .learning-list .issuer { color:var(--accent); margin-block:8px 4px; }
  .learning-list .learning-date { text-align:right; }
  .learning-list .learning-detail { margin-top:12px; }
- .learning-details { border-block:1px solid var(--line); margin-top:24px; }
- .learning-details > summary { font-size:1.125rem; }
- .learning-details .learning-list { padding-top:12px; }
+ .learning-count { color:var(--muted); font-size:1rem; font-weight:400; }
  .participation { max-width:760px; margin-top:36px; }
  .participation p { color:var(--muted); margin-top:12px; }
  @media(max-width:800px) { .degrees li,.recognition-list li { grid-template-columns:minmax(0,1fr); gap:16px; } }

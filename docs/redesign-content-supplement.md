@@ -84,7 +84,7 @@ The study distinguishes answer accuracy from format adherence, output length, an
 
 ### Efficient visual recognition and medical image segmentation
 
-My coauthored computer vision research examines competitive feature selection for finger vein recognition and complementary state space, linear-attention, and frequency-aware approaches to breast tumor segmentation.
+As the primary researcher, I investigate competitive feature selection for finger vein recognition and complementary state space, linear-attention, and frequency-aware approaches to breast tumor segmentation.
 
 LViT-CB uses competition across channel and spatial dimensions to emphasize discriminative vein patterns. FAHU-Mamba combines selective scanning with learnable frequency reweighting; SSIU-Net combines state space blocks and Mamba-inspired linear attention. The segmentation studies evaluate breast tumor structure in DCE-MRI on BreastDM.
 
@@ -92,7 +92,7 @@ LViT-CB uses competition across channel and spatial dimensions to emphasize disc
 
 ### Generative visual work
 
-My earlier work includes collaborative virtual try-on research and experience reproducing and adapting text-guided fashion-generation methods.
+My earlier work includes virtual try-on research and experience reproducing and adapting text-guided fashion-generation methods.
 
 原創合作論文與第三方方法重現分開歸屬，不因公開 repo 放在個人帳號就將上游方法列為本人提出。
 
@@ -192,3 +192,9 @@ Home、Research、Experience、About 已完成。工程以四個工作群組呈�
 本輪僅精修 Home／Research 文案及兩張方法示意，維持既有架構、研究排序與六筆書目。My contribution 以既有個人工作範圍連接論文研究目的；Approach 說明研究整體方法，不由作者順序推定所有工作的個人分工。原始論文、頁碼對照與版本差異只留在已忽略的本機工作目錄。未新增論文附件、數值績效或出版狀態。
 
 本輪驗證：`npm run check`、`npm run build`、`node scripts/check-build.mjs` 通過；瀏覽器確認 Home／Research 在 1280、390、320 px 無橫向溢出，200% 文字放大、無 JavaScript 與原生 details 鍵盤操作可用。此為文案與方法示意的針對性驗證，完整網站的既有跨瀏覽器驗收紀錄仍保留於 deployment-readiness.md。
+
+## Research role and learning visibility clarification
+
+使用者確認：僅 SLM 數學推理／驗證以合作研究定位，其餘論文研究由本人擔任主要研究者。Computer vision foundation 明確使用 primary researcher；移除虛擬試穿的合作定位。此修正不更動書目作者或團隊獎項歸屬，也不等同獨力完成。
+
+About 的 Completed courses & workshops 改為固定展開的語意 section，七筆記錄與 NVIDIA DLI 課程直接可見；保留原本課程完成與專業證照的分類、日期及 courses anchor。
