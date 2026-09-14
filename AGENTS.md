@@ -30,18 +30,19 @@ The primary purpose is to introduce the person, education, experience, and
 capabilities. Research and engineering work support this biography; public
 repositories do not determine what belongs on the site.
 
-Plan seven distinct site pages: Home (/), Education (/education/), Experience
-(/experience/), Skills (/skills/), Research (/research/), Honors (/honors/), and
-Certifications (/certifications/). These are page routes, not a single page's
-section anchors. Home centers the name, a real supplied photograph, a natural
-introduction, education summary, and capabilities overview. Its primary actions
-lead to internal pages. GitHub is an optional secondary/footer link; no repository
-list belongs in the hero.
+The approved primary architecture is Home (/), Research (/research/),
+Experience (/experience/), and About (/about/), all using the editorial system.
+Keep static, noindex compatibility pages for /education/, /skills/, /honors/,
+and /certifications/ with readable links to their migrated sections. Preserve
+publication and role anchors. Home centers the person and selected work; GitHub
+is a secondary profile link, not the hero's organizing principle.
 
-The site should communicate a computer vision / AI research background,
-engineering capability, and considered visual taste through the person's actual
-background. Use English website copy and Traditional Chinese design explanations.
-The result must feel intentionally designed, not like a generic template.
+Position the person as AI research & engineering, with agricultural VLM first,
+collaborative reasoning and verification second, and CV / engineering extensions.
+Speech research is excluded. Preserve the approved Phase 1 Home and Research
+unless integration or accessibility reveals a concrete defect. Website copy is
+English; design explanations use Traditional Chinese.
+
 
 ## Primary Design Direction
 
@@ -121,23 +122,11 @@ Content itself should often become the layout.
 
 Motion must be restrained and content-driven.
 
-Prefer:
-
-- typography reveals
-- smooth section transitions
-- subtle scroll-linked movement
-- restrained parallax
-- image scaling
-- sticky editorial storytelling
-- carefully timed entrance transitions
-
-Avoid excessive or continuous motion.
-Keep essential content visible without animation or JavaScript. Respect
-`prefers-reduced-motion`, keyboard navigation, visible focus, and readable
-contrast. Static presentation is acceptable.
-
-Use CSS first.
-Introduce GSAP only when CSS is insufficient.
+Content remains stable. Interaction communicates state through visible focus,
+current navigation, restrained link feedback, and native details/summary.
+Do not add scroll-dependent text scaling, reveals, parallax, pinned sections,
+page transitions, or client JavaScript without a concrete need. Respect reduced
+motion and keep all essential content accessible without JavaScript.
 
 ## Technical Direction
 
@@ -156,7 +145,9 @@ Do not add frameworks or dependencies without a concrete need.
 
 ## Project Sources and Editorial Selection
 
-`docs/design-guidance.md` is the current editorial and visual brief.
+`docs/redesign-plan.md`, `docs/redesign-content-supplement.md`, and the approved
+`docs/phase1-review.md` establish the editorial baseline.
+`docs/deployment-readiness.md` records the final integration and QA status.
 `reference_data/` is local-only source material, including résumés, LinkedIn
 exports, photographs, certificates, awards, and personal profile links.
 `reference_data/web.txt` is a source list, not an approved visual-reference list.
@@ -214,9 +205,9 @@ Do not delete local references as part of this policy or publish them elsewhere.
 
 ## Workflow
 
-Do not jump directly from requirements to full implementation.
+Continue from the approved implementation. Do not restart visual direction.
 
-For substantial visual changes:
+For any future substantial visual changes:
 
 1. inspect selected content and available references
 2. establish visual direction

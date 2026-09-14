@@ -1,0 +1,23 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHeading from '../components/editorial/PageHeading.astro';
+import { legacyRoutes, pageUrl } from '../data/profile';
+export function getStaticPaths() {
+  return legacyRoutes.map(route => ({ params: { legacy: route.path }, props: { route } }));
+}
+const { route } = Astro.props;
+const destination = `${pageUrl(route.target)}#${route.anchor}`;
+---
+<Layout title={`${route.label} has moved — Chi-An Chen`} description={`${route.label} is now part of ${route.target === 'about' ? 'About' : 'Experience'}. Follow the link to the updated information on Chi-An Chen's website.`} canonicalPath={pageUrl(route.target)} noindex>
+  <PageHeading title={`${route.label} has moved`} eyebrow="An updated home for this information" lead={route.target === 'about' ? 'Find this background on the About page.' : 'Find capabilities alongside the work.'}><p>This page is kept for earlier bookmarks. Continue to the updated section below.</p></PageHeading>
+  <div class="compatibility-links"><a class="editorial-link" data-compatibility-target href={destination}>View {route.anchor === 'capabilities' ? 'capabilities' : route.anchor} <span aria-hidden="true">↗</span></a>
+    {route.path === 'honors' && <ul role="list" class="plain-list"><li id="paper-awards"><a href={`${pageUrl('about')}#paper-awards`}>Paper awards</a></li><li id="competition-awards"><a href={`${pageUrl('about')}#competition-awards`}>Competition awards</a></li></ul>}
+    {route.path === 'certifications' && <ul role="list" class="plain-list"><li id="credentials"><a href={`${pageUrl('about')}#credentials`}>Professional & vendor credentials</a></li><li id="courses"><a href={`${pageUrl('about')}#courses`}>Completed courses & workshops</a></li></ul>}
+    {route.path === 'education' && <p id="learning-title">Community and service-learning experience is also included on About.</p>}
+  </div>
+</Layout>
+<style>
+ .compatibility-links { padding-bottom:80px; }
+ .compatibility-links ul,.compatibility-links p { margin-top:32px; }
+ .compatibility-links li a { display:inline-block; padding-block:12px; }
+</style>

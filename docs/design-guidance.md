@@ -1,5 +1,11 @@
 # Chi-An Chen 多頁網頁履歷：內容與設計指引
 
+> 2026-09-14 全站整合完成：Home／Research／Experience／About 已統一 editorial 系統，四個舊路徑保留相容頁。最新架構、建置與瀏覽器驗收以 [deployment-readiness.md](deployment-readiness.md) 為準；下方 Phase 1 與舊七頁紀錄保留為歷史。
+
+目前選材：研究聚焦語言模型推理與驗證、視覺語言模型、視覺辨識／分割與生成三條主線；工程保留檢索與文件 AI、預測建模、資料流程與推論整合。首頁以農業 VLM、推理與驗證、檢索應用依序形成精選案例。
+
+> 2026-09-14 Phase 1 完成：Home／Research 已依 [redesign-plan.md](redesign-plan.md) 與 [內容補充](redesign-content-supplement.md) 實作 editorial 原型。兩頁頁首為 Home／Research／Experience，頁尾保留七頁；正文維持原尺寸，無頁面過場。以下保留其餘五頁及先前七頁版本的基線紀錄；四頁架構、About 與相容路由仍是後續提案。驗收與比較見 [phase1-review.md](phase1-review.md)。
+
 更新：2026-09-12。此 brief 取代上一輪以三個公開 repo 為核心的首頁定位。
 
 ## 目的與內容優先順序

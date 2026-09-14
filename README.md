@@ -1,14 +1,14 @@
 # Chi-An Chen — Personal Website
 
-七頁個人履歷網站，使用 Astro、TypeScript 與 CSS。頁面為 Home、Education、Experience、Skills、Research、Honors、Certifications。
+人物為中心的 AI research & engineering 網站，使用 Astro、TypeScript、semantic HTML 與 CSS。延續核准的 Research in Practice 方向，四個主要頁面為 Home、Research、Experience、About。
 
 預期正式網址：**https://chi-an-chen.github.io/personal-website/**
 
-倉庫：`Chi-An-Chen/personal-website`；部署來源：`main`。本機建置通過不代表已正式部署；以 GitHub Actions 的 build、deploy 成功及線上頁面實際可讀為準。
+本輪僅準備部署，未提交、推送或部署。最終驗收範圍與限制見 [部署準備紀錄](docs/deployment-readiness.md)；Phase 1 的歷史紀錄保留於 [phase1-review.md](docs/phase1-review.md)。
 
-## 本機開發與正式建置
+## 開發與建置
 
-目前 CI 使用 Node **22.19.0**，符合 package.json 的 `>=22.12.0` 要求。使用現有 `package-lock.json` 安裝，不需升級依賴。
+CI 使用 Node **22.19.0**。依既有 lockfile 安裝：
 
 ```sh
 npm ci
@@ -17,7 +17,7 @@ npm run build
 node scripts/check-build.mjs
 ```
 
-開發伺服器使用背景模式：
+受限環境可加 `ASTRO_TELEMETRY_DISABLED=1`。開發伺服器使用背景模式：
 
 ```sh
 npm run dev -- --background
@@ -26,52 +26,52 @@ npm run astro -- dev logs
 npm run astro -- dev stop
 ```
 
-正式建置預覽：
+正式產物的本機預覽：
 
 ```sh
-npm run preview -- --host 127.0.0.1 --port 4322
+npm run preview -- --host 127.0.0.1 --port 4321
 ```
 
-預覽入口為 http://127.0.0.1:4322/personal-website/ ，內頁例如 http://127.0.0.1:4322/personal-website/education/ 。如果已有預覽服務，先用 `npm run astro -- preview status` 檢查；設定變更後使用 `npm run astro -- preview stop` 再重開同一個預覽。開發環境也必須使用 `/personal-website/` 前綴。受限環境如需停用 Astro telemetry，可在指令前加 `ASTRO_TELEMETRY_DISABLED=1`。
+入口是 http://127.0.0.1:4321/personal-website/ 。先用 `npm run astro -- preview status` 檢查既有服務，使用 `npm run astro -- preview stop` 停止。
 
-## GitHub Pages 一次性設定
+## 路由與索引
 
-1. 開啟 [倉庫 Pages 設定](https://github.com/Chi-An-Chen/personal-website/settings/pages)。
-2. 在 **Settings → Pages → Build and deployment → Source** 選擇 **GitHub Actions**。本流程不選「Deploy from a branch」，也不需要 `gh-pages` 分支。
-3. 將本機部署準備提交並推送到 `main`。推送會觸發 **Deploy to GitHub Pages** 工作流程。
-4. 在倉庫 **Actions** 檢查 `build` 與 `deploy`；若 `github-pages` 環境要求核准，依該環境的規則處理。
-5. 成功後開啟預期正式網址，逐頁直接開啟及重新整理，確認照片、favicon 和導覽正常。
+| 路徑 | 行為 |
+| --- | --- |
+| `/` | Home |
+| `/research/` | Research；保留 `publication-1` 至 `publication-6` |
+| `/experience/` | Roles → engineering work → capabilities；保留既有 role anchors |
+| `/about/` | Education → recognition → credentials & learning |
+| `/education/` | 可讀相容頁，連至 `/about/#education` |
+| `/skills/` | 可讀相容頁，連至 `/experience/#capabilities` |
+| `/honors/` | 可讀相容頁，連至 `/about/#recognition`，另保留論文／競賽獎項入口 |
+| `/certifications/` | 可讀相容頁，連至 `/about/#credentials`，另保留 courses 入口 |
+| `/404.html` | 自訂找不到頁面提示與四頁導覽 |
 
-需要手動重新部署時，在 **Actions → Deploy to GitHub Pages → Run workflow** 選擇 **main**。工作流程僅允許 main 部署。它使用 GitHub 提供的短期權限，不需新增個人 access token，也不會修改倉庫可見性。
+以上皆保留 `/personal-website/` 前綴。相容頁使用 `noindex, follow`、最終主頁 canonical 與明確連結，沒有自動跳頁或 HTTP 301 宣稱。`sitemap.xml` 只列四個主頁。各頁具 canonical、Open Graph、Twitter card 與自託管社群預覽圖片。
 
-`.github/workflows/deploy.yml` 依 [Astro 官方 GitHub Pages 指南](https://docs.astro.build/en/guides/deploy/github/) 的 build／deploy 模式設定。將複合安裝步驟展開為 `npm ci`、專案檢查、建置及產物檢查，確保使用既有 lockfile；只有 `dist/` 會成為 Pages artifact。建置失敗不進入發布步驟。
+Project Pages 的 `robots.txt` 位於專案子路徑；搜尋引擎通常從網域根目錄讀取 robots，因此主要索引控制由各頁 robots meta 與 sitemap 負責。若之後管理網域根網站，可在根 robots 加入此 sitemap；本專案不修改其他網站。
 
-## 日後更新
+## 內容維護
 
-- 網頁：`src/pages/`；共用版型與導覽：`src/layouts/Layout.astro`。
-- 學歷與頁面資料：`src/data/profile.ts`；論文、能力與學習資料：`src/data/resume.ts`。
-- 樣式：`src/styles/global.css`；選定公開頭像：`src/assets/chi-an-chen.webp`。
-- 站內連結沿用 `pageUrl()`／`assetUrl()`，不寫成缺少 base 的 `/education/` 或 `/favicon.svg`。
+- `src/data/profile.ts`：主導覽、相容路由、學位與個人連結。
+- `src/data/research.ts`、`engineering.ts`：研究主題、工程案例與能力連結。
+- `src/data/roles.ts`：核對過的角色、日期與相關工作。
+- `src/data/publications.ts`、`recognition.ts`：原始書目與團隊獎項關聯。
+- `src/data/learning.ts`：證照、課程與參與分類；`types.ts` 定義資料型別。
+- `src/layouts/Layout.astro`：全站導覽、頁尾、metadata；`src/styles/`：共用樣式。
+- `src/components/editorial/`：方法圖、頁首與日期。不要把所有內容改成通用卡片。
 
-修改後先執行上述檢查、建置、`check-build.mjs` 與本機預覽，再只提交預期的檔案、推送 `main`；Actions 會更新網站。新增公開資產或對外連結時，同步檢查 `scripts/check-build.mjs` 的明確允許範圍。
+文字保持穩定，無 scroll reveal、正文縮放或客戶端腳本。字體位於 `public/fonts/`，授權位於 `docs/font-licenses/`。原始真人照片保留於 `src/assets/`。
 
-`reference_data/`、原始 PDF、`work/`、`.env`、證書、證號與私密來源筆記不進 Git 或網站輸出。正式建置不依賴這些本機資料。設計探索圖片與驗收筆記保持本機；`dist/`、`node_modules/`、`.astro/` 不提交。忽略規則不會清除已提交的歷史，提交前仍需核對檔案與差異。
+修改後執行 check、build、輸出檢查並在瀏覽器驗收；新增公開資產或外部連結時同步審查 `scripts/check-build.mjs` 的明確允許範圍。QA 工具只安裝於本機暫存區，網站沒有新增執行階段依賴。
 
-## 本次提交與推送
+## GitHub Pages
 
-下列是供你執行的指令；部署準備階段不代為執行。先確認分支為 `main`、origin 指向上述倉庫，且待提交內容符合預期。
+沿用 `.github/workflows/deploy.yml` 的獨立 build／deploy jobs。build 依序執行 `npm ci`、check、build 與輸出驗證，只有 `dist/` 進入 Pages artifact；失敗時不部署。專案 base 設於 `astro.config.mjs`，所有內部連結使用 `pageUrl()`／`assetUrl()`。
 
-```sh
-git branch --show-current
-git remote -v
-git status --short
-git diff --check
-git add astro.config.mjs .github/workflows/deploy.yml scripts/check-build.mjs README.md
-git diff --cached --check
-git diff --cached --stat
-git diff --cached
-git commit -m "Prepare GitHub Pages deployment"
-git push origin main
-```
+日後獲明確部署指示後，先確認倉庫 Settings → Pages → Source 為 GitHub Actions。推送 `main` 或手動執行 workflow 會觸發部署；本輪沒有執行這些動作，也未驗證正式站的部署結果。流程參考 [Astro GitHub Pages 指南](https://docs.astro.build/en/guides/deploy/github/)。
 
-如果遠端在本機檢查後出現新提交，先同步並檢查差異，不使用強制推送。
+## 公開邊界
+
+`reference_data/`、原始 PDF、`work/`、憑證、私密來源筆記、證書掃描與 QA 截圖不進 Git 或公開輸出。建置不需要它們或 GitHub 認證。`dist/`、`node_modules/`、`.astro/` 與瀏覽器暫存均忽略。`.gitignore` 不會移除已追蹤的內容，交付前仍須檢查 Git index 與產物。

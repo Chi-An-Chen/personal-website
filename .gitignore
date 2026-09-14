@@ -32,3 +32,6 @@ pnpm-debug.log*
 /work/
 /tmp/
 /docs/design-exploration/
+
+# Local browser validation artifacts
+/.playwright-cli/

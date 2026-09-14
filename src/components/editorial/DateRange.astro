@@ -1,0 +1,5 @@
+---
+interface Props { start: string; startLabel: string; end: string | null; endLabel: string; }
+const { start, startLabel, end, endLabel } = Astro.props;
+---
+<time datetime={start}>{startLabel}</time><span aria-hidden="true"> — </span><span class="sr-only"> to </span>{end ? <time datetime={end}>{endLabel}</time> : endLabel}

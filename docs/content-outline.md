@@ -1,5 +1,9 @@
 # Chi-An Chen — Multi-page résumé content
 
+> 2026-09-14 全站整合完成：Home／Research／Experience／About 已統一 editorial 系統，四個舊路徑保留相容頁。最新架構、建置與瀏覽器驗收以 [deployment-readiness.md](deployment-readiness.md) 為準；下方 Phase 1 與舊七頁紀錄保留為歷史。
+
+> 2026-09-14 Phase 1：Home／Research 已完成，定位為 AI research & engineering，順序為農業 VLM → 推理與驗證 → CV／工程延伸；語音研究不列入選材。以 [redesign-plan.md](redesign-plan.md)、[內容補充](redesign-content-supplement.md) 及 [原型驗收](phase1-review.md) 為準。以下保留先前七頁內容基線；其餘五頁未遷移，四頁提案未實作。
+
 > 原型進度（2026-09-12）：七個獨立頁面已實作，完整導覽與交叉連結已啟用。Home 保留 **Explore my education** 為主要入口，並補入 **View experience**。以下內容依各頁呈現，編輯說明不輸出至網站。
 2026-09-12 · English website copy · Seven independent pages
 

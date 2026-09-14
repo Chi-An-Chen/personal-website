@@ -1,0 +1,57 @@
+---
+import type { ConceptKind } from '../../data/research';
+interface Props { kind: ConceptKind; }
+const { kind } = Astro.props;
+const steps = kind === 'vlm'
+  ? ['Image', 'Visual observation', 'Reasoning', 'Answer', 'Evidence-aware checking']
+  : ['Problem', 'Concise reasoning', 'Verification', 'Final response'];
+---
+<figure class:list={['concept', `concept--${kind}`]}>
+  <div class="figure-heading"><span>Method sketch</span><span aria-hidden="true">{kind === 'vlm' ? '01' : kind === 'reasoning' ? '02' : '03'}</span></div>
+  {kind === 'retrieval' ? <div class="retrieval-flow">
+    <ul class="sources plain-list" aria-label="Information sources" role="list">
+      <li><span class="source-title">Documents</span><span>Retrieved passages</span></li>
+      <li><span class="source-title">User query</span><span>Question & context</span></li>
+      <li><span class="source-title">Structured data</span><span>Relevant records</span></li>
+    </ul>
+    <div class="compose"><span class="step-meta">Bring together</span><strong>Evidence<br />composition</strong></div>
+    <div class="response"><span class="step-meta">Generate</span><strong>Response</strong></div>
+  </div> : <ol class="steps plain-list" role="list">
+    {steps.map((step, i) => <li><span class="step-meta">{String(i + 1).padStart(2, '0')}</span><span class="step-title">{step}</span></li>)}
+  </ol>}
+  <figcaption>{kind === 'vlm' ? 'A conceptual path from visual evidence to a checked answer.' : kind === 'reasoning' ? 'A conceptual workflow for reasoning and answer checking.' : 'A conceptual view of how different sources inform an answer.'} <span>Not a literal model architecture.</span></figcaption>
+</figure>
+<style>
+  .concept { margin:0; border-block:1px solid var(--line); padding:22px 0 20px; }
+  .figure-heading { display:flex; justify-content:space-between; color:var(--accent); font-size:.8125rem; letter-spacing:.08em; text-transform:uppercase; }
+  .steps { padding-block:26px; }
+  .steps li { position:relative; display:flex; align-items:baseline; gap:22px; padding:14px 0; }
+  .steps li + li::before { content:''; position:absolute; top:-4px; left:8px; height:12px; width:1px; background:var(--line); }
+  .step-meta { color:var(--muted); font-size:.8125rem; }
+  .step-title { font-family:var(--display); color:var(--ink); font-size:1.625rem; line-height:1.2; }
+  .steps li:last-child .step-title { color:var(--accent); }
+  .concept--reasoning .steps { padding-block:28px; }
+  .concept--reasoning .steps li { padding-block:18px; }
+  figcaption { border-top:1px solid var(--line); padding-top:14px; color:var(--muted); font-size:.875rem; line-height:1.5; }
+  figcaption span { display:block; }
+  .retrieval-flow { display:grid; grid-template-columns:1.2fr 1fr .7fr; align-items:center; gap:72px; padding-block:36px; }
+  .sources { position:relative; display:grid; gap:20px; }
+  .sources::after { content:''; position:absolute; right:-24px; top:24px; bottom:24px; border-right:1px solid var(--line); }
+  .sources li { position:relative; }
+  .sources li::after { content:''; position:absolute; right:-24px; top:50%; width:16px; border-top:1px solid var(--line); }
+  .sources span { display:block; font-size:.875rem; color:var(--muted); }
+  .sources .source-title { color:var(--ink); font-size:1.125rem; }
+  .compose,.response { position:relative; }
+  .compose::before,.response::before { content:'→'; position:absolute; left:-46px; top:40%; color:var(--accent); }
+  strong { display:block; font-family:var(--display); font-size:1.875rem; font-weight:400; line-height:1.25; margin-top:8px; }
+  .response strong { color:var(--accent); }
+  @media(max-width:800px) {
+    .retrieval-flow { grid-template-columns:1fr; gap:36px; padding-block:28px; }
+    .sources { gap:18px; border-bottom:1px solid var(--line); padding-bottom:24px; }
+    .sources::after,.sources li::after { display:none; }
+    .compose::before,.response::before { content:'↓'; left:0; top:-28px; }
+    .compose,.response { padding-top:4px; }
+    .step-title { font-size:1.5rem; }
+    strong { font-size:1.625rem; }
+  }
+</style>

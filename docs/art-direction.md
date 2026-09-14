@@ -1,5 +1,9 @@
 # Personal Academic Profile — Chi-An Chen
 
+> 2026-09-14 全站整合完成：Home／Research／Experience／About 已統一 editorial 系統，四個舊路徑保留相容頁。最新架構、建置與瀏覽器驗收以 [deployment-readiness.md](deployment-readiness.md) 為準；下方 Phase 1 與舊七頁紀錄保留為歷史。
+
+> 2026-09-14 最新狀態：Home／Research editorial 原型已完成，採 Source Serif 4／Source Sans 3、暖白與赭色、圖文交替的開放式構圖。敘事順序為農業 VLM → 合作推理研究 → CV／工程延伸，不包含語音研究；兩頁正文不縮放、不使用頁面過場。設計依據見 [redesign-plan.md](redesign-plan.md)，最新畫面與驗收見 [phase1-review.md](phase1-review.md)。以下保留先前版本的歷史紀錄，其動態規格不適用於新的兩頁原型。
+
 2026-09-12 · 七頁 Astro 原型
 
 ## 本輪五頁延伸
