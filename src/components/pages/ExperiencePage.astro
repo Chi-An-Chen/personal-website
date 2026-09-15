@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import MotionRuntime from '../editorial/MotionRuntime.astro';
 import PageHeading from '../editorial/PageHeading.astro';
 import DateRange from '../editorial/DateRange.astro';
 import ConceptFigure from '../editorial/ConceptFigure.astro';
@@ -14,10 +15,11 @@ const t = translator(locale);
 const pageUrl = (id: Parameters<typeof basePageUrl>[0]) => basePageUrl(id, locale);
 ---
 <Layout locale={locale} title={t("Experience — Chi-An Chen")} description={t("Engineering experience in retrieval applications, predictive modeling, data pipelines, and perception-model integration, alongside verified research and industry roles.")} currentPage="experience">
+  <MotionRuntime />
   <PageHeading title={t("Experience")} eyebrow={t("Engineering in practice")} lead={t("From source data to working systems.")}><p>{t("My engineering work connects models with the information and interfaces around them. It spans retrieval applications, predictive modeling, data preparation, and inference integration.")}</p></PageHeading>
   <nav class="experience-index" aria-label={t("Experience sections")}><a href="#roles">{t("Roles")} <span aria-hidden="true">↓</span></a><a href="#engineering-work">{t("Selected engineering work")} <span aria-hidden="true">↓</span></a><a href="#capabilities">{t("Capabilities")} <span aria-hidden="true">↓</span></a></nav>
   <section class="roles-section" id="roles" aria-labelledby="roles-title">
-    <div class="section-label"><p class="kicker">{t("Context")}</p><h2 id="roles-title">{t("Research & industry")}</h2></div>
+    <div class="section-label" data-reveal-group><p class="kicker" data-reveal>{t("Context")}</p><h2 id="roles-title" data-reveal="second">{t("Research & industry")}</h2></div>
     <ol class="roles plain-list" role="list" aria-label={t("Roles, most recent first")}>{roles.map(role => <li id={role.id} data-role-id={role.id}>
       <p class="role-date"><DateRange locale={locale} {...role} /></p>
       <div><h3>{t(role.title)}</h3><p class="role-organization">{t(role.organization)}{role.location && ` · ${t(role.location)}`}</p>{role.context && <p class="role-context">{t(role.context)}</p>}
@@ -26,16 +28,16 @@ const pageUrl = (id: Parameters<typeof basePageUrl>[0]) => basePageUrl(id, local
     </li>)}</ol>
   </section>
   <section id="engineering-work" aria-labelledby="work-title">
-    <div class="section-top"><h2 id="work-title">{t("Selected engineering work")}</h2><p>{t("Problems, contributions & integration.")}</p></div>
+    <div class="section-top" data-reveal-group><h2 data-reveal id="work-title">{t("Selected engineering work")}</h2><p>{t("Problems, contributions & integration.")}</p></div>
     {engineeringWork.map((work,i) => <article class:list={['engineering-case', i===0 && 'engineering-case--lead']} id={work.id} data-engineering-id={work.id}>
-      <div class="case-heading"><p class="kicker">0{i+1} / {t(i===0 ? 'Retrieval & document applications' : i===1 ? 'Predictive modeling & NLP' : i===2 ? 'Data engineering' : 'Perception & inference')}</p><h3>{t(work.title)}</h3><p class="case-summary">{t(work.summary)}</p></div>
+      <div class="case-heading" data-reveal-group><p class="kicker" data-reveal>0{i+1} / {t(i===0 ? 'Retrieval & document applications' : i===1 ? 'Predictive modeling & NLP' : i===2 ? 'Data engineering' : 'Perception & inference')}</p><h3 data-reveal="second">{t(work.title)}</h3><p class="case-summary" data-reveal="third">{t(work.summary)}</p></div>
       <dl class="case-narrative"><div><dt>{t("Problem")}</dt><dd>{t(work.problem)}</dd></div><div><dt>{t("My work")}</dt><dd>{t(work.contribution)}</dd></div><div><dt>{t("Integration")}</dt><dd>{t(work.integration)}</dd></div></dl>
       {work.visual && <ConceptFigure locale={locale} kind={work.visual} />}
       <p class="case-methods"><span>{t("Methods in context")}</span>{work.methods.map(t).join(' · ')}</p>
     </article>)}
   </section>
-  <section class="capabilities-section" id="capabilities" aria-labelledby="capabilities-title"><div class="section-label"><p class="kicker">{t("Capabilities in context")}</p><h2 id="capabilities-title">{t("Skills, connected to work.")}</h2></div><ul class="capabilities plain-list" role="list">{capabilityGroups.map(capability => <li><h3>{t(capability.title)}</h3><p>{t(capability.description)}</p><a class="context-link" href={`${pageUrl(capability.page)}#${capability.anchor}`}>{t(capability.link)} <span aria-hidden="true">↗</span></a></li>)}</ul></section>
-  <section class="editorial-continue" aria-labelledby="experience-continue"><p class="kicker">{t("The background behind the work")}</p><h2 id="experience-continue">{t("Learning, research & collaboration.")}</h2><p>{t("Read about my academic background, recognition, and continued learning.")}</p><a class="editorial-link" href={pageUrl('about')}>{t("About me")} <span aria-hidden="true">↗</span></a></section>
+  <section class="capabilities-section" id="capabilities" aria-labelledby="capabilities-title"><div class="section-label" data-reveal-group><p class="kicker" data-reveal>{t("Capabilities in context")}</p><h2 id="capabilities-title" data-reveal="second">{t("Skills, connected to work.")}</h2></div><ul class="capabilities plain-list" role="list">{capabilityGroups.map(capability => <li><h3>{t(capability.title)}</h3><p>{t(capability.description)}</p><a class="context-link" href={`${pageUrl(capability.page)}#${capability.anchor}`}>{t(capability.link)} <span aria-hidden="true">↗</span></a></li>)}</ul></section>
+  <section class="editorial-continue" aria-labelledby="experience-continue" data-reveal-group><p class="kicker" data-reveal>{t("The background behind the work")}</p><h2 id="experience-continue" data-reveal="second">{t("Learning, research & collaboration.")}</h2><p>{t("Read about my academic background, recognition, and continued learning.")}</p><a class="editorial-link" href={pageUrl('about')}>{t("About me")} <span aria-hidden="true">↗</span></a></section>
 </Layout>
 <style>
  .experience-index { display:flex; flex-wrap:wrap; gap:8px 40px; padding-block:12px; border-block:1px solid var(--line); }

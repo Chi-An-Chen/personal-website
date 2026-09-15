@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { resolve, relative, sep } from 'node:path';
 import config from '../astro.config.mjs';
+import { gzipSync } from 'node:zlib';
 
 // This contract deliberately needs no private sources, credentials, or QA artifacts.
 const primary = ['', 'research', 'experience', 'about'];
@@ -56,6 +57,7 @@ async function checkReference(raw, from, allowExternal = false) {
   checkedLinks++;
 }
 const titles = new Set(), descriptions = new Set();
+const motionModules = new Set();
 for (const [file,html] of htmlPages) {
   const isZh = file.startsWith('zh/');
   const locale = isZh ? 'zh-Hant' : 'en';
@@ -70,8 +72,20 @@ for (const [file,html] of htmlPages) {
   assert(title.length > 10 && description.length >= (isZh ? 30 : 70), `Missing/usefully short metadata: ${file}`);
   titles.add(title); descriptions.add(description);
   assert.equal((html.match(/<h1(?:\s|>)/g) || []).length,1,`One h1 required: ${file}`);
-  assert(html.includes(`<html lang="${locale}" data-design="editorial">`),`Language or design: ${file}`);
-  assert(!/<script(?:\s|>)/i.test(html),`Unwanted runtime script: ${file}`);
+  const hasOpening = file === 'index.html' || file === 'zh/index.html';
+  assert(html.includes(`<html lang="${locale}" data-design="editorial"${hasOpening ? ' data-opening' : ''}>`),`Language, design and Home opening: ${file}`);
+  const scripts = [...html.matchAll(/<script\b([^>]*)>([^]*?)<\/script>/gi)];
+  assert.equal(scripts.length,isPrimary ? 1 : 0,`One motion module on primary pages only: ${file}`);
+  if(isPrimary) {
+    const [,attributes,source] = scripts[0];
+    assert.equal(attributes.trim(),'type="module"',`Only the inline Astro motion module is allowed: ${file}`);
+    assert(source.includes('[data-reveal-group]') && source.includes('[data-fieldbook]'),`Unexpected module: ${file}`);
+    assert(!/\b(?:fetch|XMLHttpRequest|WebSocket|sendBeacon|eval)\s*\(|\bimport\s*(?:\(|["'{*])/.test(source),`Unexpected network or imported runtime: ${file}`);
+    assert(gzipSync(source).length <= 4096,`Motion module exceeds 4 KiB gzip: ${file}`);
+    motionModules.add(source);
+  }
+  assert(!/\son\w+\s*=/i.test(html),`Unexpected inline event handler: ${file}`);
+  assert(!/class="[^"]*\bis-entering\b/.test(html),`HTML must start settled: ${file}`);
   assert(!forbiddenContent.test(html),`Non-public content: ${file}`);
   assert(!/\b(?:Whisper|ASR|LoRA)\b|speech adaptation/i.test(html),`Out-of-scope research: ${file}`);
   const ids=[...html.matchAll(/\sid="([^"]+)"/g)].map(m=>m[1]);
@@ -118,10 +132,14 @@ for (const [file,html] of htmlPages) {
 }
 assert.equal(titles.size,expectedPages.length,'Distinct titles');
 assert.equal(descriptions.size,expectedPages.length,'Distinct descriptions');
+assert.equal(motionModules.size,1,'All eight primary pages share the same motion entry');
 for(const file of files.filter(file=>/\.(css|svg|xml|txt)$/.test(file))) {
   const content=await readFile(resolve(root,file),'utf8');
   assert(!forbiddenContent.test(content),`Private data in ${file}`);
-  assert(!/profile-text-grow|animation-timeline|@keyframes/.test(content),`Obsolete motion in ${file}`);
+  assert(!/profile-text-grow|animation-timeline/.test(content),`Obsolete motion in ${file}`);
+  for(const [,name] of content.matchAll(/@(?:-webkit-)?keyframes\s+([^\s{]+)/g)) {
+    assert.equal(name,'editorial-enter',`Unapproved keyframes in ${file}`);
+  }
   for(const match of content.matchAll(/url\(\s*["']?([^)'"\s]+)["']?\s*\)|(?:href|src)=["']([^"']+)["']/g)) {
     const raw=match[1]||match[2];if(!raw.startsWith('#')) await checkReference(raw,file);
   }
@@ -136,6 +154,10 @@ const zhCopy=JSON.parse(await readFile('src/i18n/zh.json','utf8'));
 assert(Object.values(zhCopy).every(value=>typeof value==='string'&&value.trim()),'Empty translation');
 for(const prefix of ['', 'zh/']) {
 const home=htmlPages.get(`${prefix}index.html`), research=htmlPages.get(`${prefix}research/index.html`), experience=htmlPages.get(`${prefix}experience/index.html`), about=htmlPages.get(`${prefix}about/index.html`);
+assert(home.includes('class="prologue-statement" lang="en"') && home.includes('From perception,') && home.includes('to reasoning,') && home.includes('to practice.'),'Shared English prologue');
+assert(home.indexOf('class="prologue"') < home.indexOf('class="site-header') && home.indexOf('class="site-header') < home.indexOf('class="editorial-hero"'),'Prologue precedes navigation and the existing hero');
+assert(home.includes('href="#site-header"') && home.includes(prefix ? '往下閱讀' : '>Scroll'),'Native localized prologue link');
+assert(/<div\b[^>]*\sdata-fieldbook(?:\s|=|>)/.test(research) && !/<div\b[^>]*\sdata-fieldbook(?:\s|=|>)/.test(experience),'Research-only orientation');
 function assertOrder(html,values,label) { let previous=-1;for(const value of values) { const position=html.indexOf(value);assert(position>previous,`${label}: ${value}`);previous=position; } }
 assertOrder(home,['id="selected-agricultural-vlm"','id="selected-reasoning-verification"','id="selected-retrieval-applications"'],'Home sequence');
 assertOrder(research,['id="agricultural-vlm"','id="reasoning-verification"','id="visual-research"','id="publications-title"'],'Research sequence');
@@ -176,12 +198,13 @@ const originalPapers=await readRecords('src/data/publications.ts');
 const learning=await readRecords('src/data/learning.ts');
 const originalEnglish=new Set([
   'Chi-An Chen','EN','LinkedIn','GitHub','Getting Started with AI on Jetson Nano',
+  'From perception,','to reasoning,','to practice.',
   'Best Creative Award · AVSS 2025','Best Conference Papers · IS3C 2025',
   ...originalPapers.flatMap(p=>[p.title,p.authors,p.venue]),
   ...learning.flatMap(item=>[item.name,item.issuer]),
 ]);
 for(const file of expectedPages.filter(file=>file.startsWith('zh/'))) {
-  const html=htmlPages.get(file).split('<body>')[1].split('</body>')[0];
+  const html=htmlPages.get(file).split('<body>')[1].split('</body>')[0].replace(/<script\b[^>]*>[^]*?<\/script>/gi,'');
   for(const [,raw] of html.matchAll(/>([^<>]+)</g)) {
     const text=decode(raw).trim();
     if(/[A-Za-z]/.test(text)&&!/[\u3400-\u9fff]/.test(text)) assert(originalEnglish.has(text),`Untranslated visible text in ${file}: ${text}`);

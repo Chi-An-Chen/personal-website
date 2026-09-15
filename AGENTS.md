@@ -126,11 +126,34 @@ Content itself should often become the layout.
 
 Motion must be restrained and content-driven.
 
-Content remains stable. Interaction communicates state through visible focus,
-current navigation, restrained link feedback, and native details/summary.
-Do not add scroll-dependent text scaling, reveals, parallax, pinned sections,
-page transitions, or client JavaScript without a concrete need. Respect reduced
-motion and keep all essential content accessible without JavaScript.
+The approved Motion & Interaction Identity Pass adds a normal-flow Home prologue
+with the English statement “From perception, to reasoning, to practice.” in both
+locales. The pure-black opening fills the first viewport, followed in document
+order by the navigation and existing person hero with its single h1. Hide the
+Home scrollbar with CSS while preserving native scrolling and keyboard access.
+The statement is visible immediately and waits for input. The first downward
+wheel/swipe or keyboard gesture may smoothly advance to the header once; the
+Scroll link remains a native anchor. Do not auto-enter on a timer or lock scrolling.
+Respect reduced motion and allow oversized opening text to scroll normally.
+After the opening has left the viewport, remove it from the scrolling document
+without shifting the visible content. Scrolling back to the top must stop at
+the header and biography; it must not bring the opening back.
+
+Primary pages may opt selected heading clusters and concept figures into the
+shared `MotionRuntime.astro` / `src/scripts/motion.ts` enhancement. HTML and base
+CSS must remain visible. Start finite, reveal-once animations only on entry;
+never introduce an unrevealed hidden state, scroll-dependent scaling, scrubbed
+text, parallax, pinned content, or page transitions. Ordinary body copy and
+records remain stable. Settle motion on focus, anchors, history restoration,
+reduced motion, and print. Keep CSS figure inspection available without JS.
+
+Research alone enhances its existing native theme index with desktop sticky
+orientation, contained by the three themes. Mobile, short viewports, and no-JS
+use the normal-flow index. Preserve native links, focus and details/summary.
+No animation dependencies, continuous scroll handlers, or permanent will-change.
+Keep the shared runtime below 4 KiB gzip and added CSS below 3 KiB gzip; validate
+the exact runtime/keyframes in the build check. Compatibility pages and 404 stay
+script-free. See `docs/motion-identity-review.md` for the implementation and QA.
 
 ## Technical Direction
 

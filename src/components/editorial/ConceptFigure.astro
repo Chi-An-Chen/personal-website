@@ -18,18 +18,18 @@ const steps = kind === 'vlm'
     { title: 'Assess costs & benefits', detail: 'Accuracy and format; separate error-recovery experiments' },
   ];
 ---
-<figure class:list={['concept', `concept--${kind}`]}>
+<figure class:list={['concept', `concept--${kind}`]} data-reveal-group data-reveal="figure">
   <div class="figure-heading"><span>{t("Method sketch")}</span><span aria-hidden="true">{kind === 'vlm' ? '01' : kind === 'reasoning' ? '02' : '03'}</span></div>
   {kind === 'retrieval' ? <div class="retrieval-flow">
     <ul class="sources plain-list" aria-label={t("Information sources")} role="list">
-      <li><span class="source-title">{t("Documents")}</span><span>{t("Retrieved passages")}</span></li>
-      <li><span class="source-title">{t("User query")}</span><span>{t("Question & context")}</span></li>
-      <li><span class="source-title">{t("Structured data")}</span><span>{t("Relevant records")}</span></li>
+      <li tabindex="0"><span class="source-title">{t("Documents")}</span><span>{t("Retrieved passages")}</span></li>
+      <li tabindex="0"><span class="source-title">{t("User query")}</span><span>{t("Question & context")}</span></li>
+      <li tabindex="0"><span class="source-title">{t("Structured data")}</span><span>{t("Relevant records")}</span></li>
     </ul>
     <div class="compose"><span class="step-meta">{t("Bring together")}</span><strong>{t("Evidence")}<br />{t("composition")}</strong></div>
     <div class="response"><span class="step-meta">{t("Generate")}</span><strong>{t("Response")}</strong></div>
   </div> : <ol class="steps plain-list" role="list">
-    {steps.map((step, i) => <li><span class="step-meta">{String(i + 1).padStart(2, '0')}</span><div><span class="step-title">{t(step.title)}</span><span class="step-detail">{t(step.detail)}</span></div></li>)}
+    {steps.map((step, i) => <li tabindex="0"><span class="step-meta">{String(i + 1).padStart(2, '0')}</span><div><span class="step-title">{t(step.title)}</span><span class="step-detail">{t(step.detail)}</span></div></li>)}
   </ol>}
   <figcaption>{t(kind === 'vlm' ? 'CROP: a conceptual view of decoupled supervision and inference.' : kind === 'reasoning' ? 'A conceptual view of the study design. Verification is a tested condition.' : 'A conceptual view of how different sources inform an answer.')} <span>{t("Not a literal model architecture.")}</span></figcaption>
 </figure>
@@ -60,6 +60,28 @@ const steps = kind === 'vlm'
   .compose::before,.response::before { content:'→'; position:absolute; left:-46px; top:40%; color:var(--accent); }
   strong { display:block; font-family:var(--display); font-size:1.875rem; font-weight:400; line-height:1.25; margin-top:8px; }
   .response strong { color:var(--accent); }
+  /* Inspection is transient and CSS-only. Keyboard focus wins over hover. */
+  .steps li:focus-visible :is(.step-meta,.step-title),
+  .sources li:focus-visible .source-title { color:var(--accent); }
+  .steps li:focus-visible + li::before { background:var(--accent); width:2px; }
+  .sources li:focus-visible::after,
+  .sources:has(li:focus-visible)::after { border-color:var(--accent); border-width:2px; }
+  .retrieval-flow:has(.sources li:focus-visible) .compose strong { color:var(--accent); }
+  .retrieval-flow:has(.sources li:focus-visible) :is(.compose,.response)::before { text-shadow:.5px 0 currentColor; }
+  @media(hover:hover) and (pointer:fine) {
+    .concept:not(:has(:focus-visible)) .steps li:hover :is(.step-meta,.step-title),
+    .concept:not(:has(:focus-visible)) .sources li:hover .source-title { color:var(--accent); }
+    .concept:not(:has(:focus-visible)) .steps li:hover + li::before { background:var(--accent); width:2px; }
+    .concept:not(:has(:focus-visible)) .sources li:hover::after,
+    .concept:not(:has(:focus-visible)) .sources:has(li:hover)::after { border-color:var(--accent); border-width:2px; }
+    .concept:not(:has(:focus-visible)) .retrieval-flow:has(.sources li:hover) .compose strong { color:var(--accent); }
+    .concept:not(:has(:focus-visible)) .retrieval-flow:has(.sources li:hover) :is(.compose,.response)::before { text-shadow:.5px 0 currentColor; }
+  }
+  @media(prefers-reduced-motion:no-preference) {
+    .step-title,.step-meta,.source-title,.compose strong { transition:color 160ms var(--motion-ease); }
+    .steps li::before { transition:background-color 160ms var(--motion-ease); }
+    .sources::after,.sources li::after { transition:border-color 160ms var(--motion-ease); }
+  }
   @media(max-width:800px) {
     .retrieval-flow { grid-template-columns:1fr; gap:36px; padding-block:28px; }
     .sources { gap:18px; border-bottom:1px solid var(--line); padding-bottom:24px; }
