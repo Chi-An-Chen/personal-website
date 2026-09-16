@@ -65,7 +65,7 @@ Project Pages 的 `robots.txt` 位於專案子路徑；搜尋引擎通常從網�
 - `src/i18n/zh.json`：繁中翻譯，以英文原文作為鍵；英文改字需同步更新，缺漏會阻擋建置。正式書目與課程名稱不翻譯。
 - `src/components/pages/`：四個共用頁面元件；`src/pages/` 與 `src/pages/zh/` 只指定 locale。`pageUrl(id, locale)` 維持語言，`assetUrl()` 共用資產。
 
-文字保持穩定，無 scroll reveal、正文縮放或客戶端腳本。字體位於 `public/fonts/`，授權位於 `docs/font-licenses/`。原始真人照片保留於 `src/assets/`。
+四個主頁共用輕量且經驗收的 motion runtime；沒有 JavaScript 時內容仍可閱讀。Home 的黑色開場只在同一分頁首次進站時顯示；站內返回首頁與重新整理會直接進入人物介紹。選定的標題與圖解可短暫進場，Research 的區段索引可追蹤閱讀位置。主導覽的 active pill 以 CSS 漸進增強跨頁移動效果，正文頁面維持一般連結切換。字體位於 `public/fonts/`，授權位於 `docs/font-licenses/`。原始真人照片保留於 `src/assets/`。
 
 修改後執行 check、build、輸出檢查並在瀏覽器驗收；新增公開資產或外部連結時同步審查 `scripts/check-build.mjs` 的明確允許範圍。QA 工具只安裝於本機暫存區，網站沒有新增執行階段依賴。
 

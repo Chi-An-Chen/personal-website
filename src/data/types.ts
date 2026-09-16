@@ -19,6 +19,13 @@ export interface LearningItem {
 export type ConceptKind = 'vlm' | 'reasoning' | 'retrieval';
 export interface EngineeringWork {
   id: string; title: string; summary: string; contribution: string;
-  problem: string; integration: string; methods: string[];
+  problem: string; integration: string; methods: string[]; homeEvidence?: string[];
   visual?: ConceptKind; kind: 'applied-project' | 'exploration';
+}
+export function assertHomeEvidence(entries: readonly { id: string; methods: string[]; homeEvidence?: string[] }[]): void {
+  for (const entry of entries) {
+    for (const item of entry.homeEvidence ?? []) {
+      if (!entry.methods.includes(item)) throw new Error(`Home evidence is missing from methods for ${entry.id}: ${item}`);
+    }
+  }
 }

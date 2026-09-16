@@ -1,0 +1,20 @@
+---
+interface SectionIndexItem {
+  href: string;
+  label: string;
+  number?: string;
+}
+interface Props {
+  items: SectionIndexItem[];
+  ariaLabel: string;
+  layout?: 'inline' | 'grid';
+  showArrow?: boolean;
+  tracked?: boolean;
+}
+const { items, ariaLabel, layout = 'inline', showArrow = false, tracked = false } = Astro.props;
+---
+<nav class:list={['section-index', `section-index--${layout}`, { 'section-index--arrow': showArrow }]} aria-label={ariaLabel} data-section-index={tracked ? '' : undefined}>
+  <ol class="plain-list" role="list">
+    {items.map(item => <li><a href={item.href}>{item.number && <span class="section-index__number">{item.number}</span>}<span class="section-index__label">{item.label}</span>{showArrow && <span class="section-index__arrow" aria-hidden="true">↓</span>}</a></li>)}
+  </ol>
+</nav>

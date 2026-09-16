@@ -1,8 +1,8 @@
 ---
-interface Props { title: string; eyebrow: string; lead: string; }
+interface Props { title: string; eyebrow: string; lead: string | string[]; }
 const { title, eyebrow, lead } = Astro.props;
 ---
-<header class="page-heading"><p class="kicker">{eyebrow}</p><h1>{title}</h1><p class="page-lead">{lead}</p><div class="page-context"><slot /></div></header>
+<header class="page-heading"><p class="kicker">{eyebrow}</p><h1>{title}</h1><p class="page-lead">{Array.isArray(lead) ? lead.map((line, index) => <>{index > 0 && <br />}{line}</>) : lead}</p><div class="page-context"><slot /></div></header>
 <style>
  .page-heading { padding-block:64px 48px; }
  .page-heading h1 { font-size:clamp(3.5rem,7vw,6rem); letter-spacing:-.05em; }

@@ -1,4 +1,4 @@
-import type { EngineeringWork } from './types';
+import { assertHomeEvidence, type EngineeringWork } from './types';
 export const retrievalWork: EngineeringWork = {
   id: 'retrieval-applications', title: 'From information retrieval to AI applications', kind: 'applied-project', visual: 'retrieval',
   summary: 'Connecting documents, structured queries, and contextual information in admissions-counseling applications.',
@@ -6,6 +6,7 @@ export const retrievalWork: EngineeringWork = {
   problem: 'An admissions question can depend on information spread across documents, school records, and contextual rules. A useful answer requires retrieving the right kind of evidence and bringing it into a coherent conversational flow.',
   integration: 'I connect retrieval, domain-specific prompts, data-use constraints, and application APIs. In separate document-AI work, I prepare sustainability-document collections, use metadata in retrieval, and develop PDF extraction and language-model summarization workflows.',
   methods: ['Document retrieval', 'SQL lookup', 'Context composition', 'API integration'],
+  homeEvidence: ['Document retrieval', 'SQL lookup', 'API integration'],
 };
 export const engineeringWork: EngineeringWork[] = [
   retrievalWork,
@@ -34,6 +35,7 @@ export const engineeringWork: EngineeringWork[] = [
     methods: ['PyTorch', 'OpenCV', 'Model evaluation', 'ONNX Runtime', 'CPU inference', 'API integration'],
   },
 ];
+assertHomeEvidence(engineeringWork);
 export const capabilityGroups = [
   { title: 'Computer vision and multimodal learning', description: 'Recognition, segmentation, and vision-language models, with domain-specific data preparation and model adaptation.', page: 'research', anchor: 'agricultural-vlm', link: 'Vision-language research' },
   { title: 'Language-model reasoning and evaluation', description: 'Concise reasoning, verification-oriented data generation, and mathematical evaluation workflows in collaborative research.', page: 'research', anchor: 'reasoning-verification', link: 'Reasoning & verification' },

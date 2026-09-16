@@ -72,10 +72,11 @@ initEntrances();
 /** A first deliberate gesture completes the Home opening; ordinary scrolling resumes. */
 const opening = document.querySelector<HTMLElement>('.prologue');
 const entry = document.getElementById('site-header');
-if (opening && entry) {
+const openingSkipped = document.documentElement.hasAttribute('data-opening-seen');
+if (opening && entry && !openingSkipped) {
   let departure: IntersectionObserver | undefined;
-  const dismissPassedOpening = () => {
-    if (opening.hidden || opening.getBoundingClientRect().bottom > 1) return;
+  const dismissOpening = (force = false) => {
+    if (opening.hidden || (!force && opening.getBoundingClientRect().bottom > 1)) return;
     const nextScrollY = Math.max(0, scrollY - opening.offsetHeight);
     // Cancel any remaining smooth scroll before removing its original destination offset.
     window.scrollTo({ top: scrollY, behavior: 'instant' });
@@ -89,8 +90,10 @@ if (opening && entry) {
     } catch { /* A malformed fragment must not prevent a readable page. */ }
     departure?.disconnect();
     window.removeEventListener('scrollend', dismissPassedOpening);
-    window.removeEventListener('pageshow', dismissPassedOpening);
+    window.removeEventListener('pageshow', dismissRestoredOpening);
   };
+  const dismissPassedOpening = () => dismissOpening();
+  const dismissRestoredOpening = (event: PageTransitionEvent) => dismissOpening(event.persisted);
   // Remove the spent opening only once it is offscreen, preserving the reader's position.
   // This is the second observer on Home; Research has its own second observer instead.
   if ('IntersectionObserver' in window) {
@@ -100,9 +103,9 @@ if (opening && entry) {
     } catch { /* Native scrollend still handles observer failures. */ }
   }
   window.addEventListener('scrollend', dismissPassedOpening);
-  window.addEventListener('pageshow', dismissPassedOpening);
+  window.addEventListener('pageshow', dismissRestoredOpening);
 }
-if (opening && entry && !location.hash && scrollY === 0) {
+if (opening && entry && !openingSkipped && !location.hash && scrollY === 0) {
   const controller = new AbortController();
   const { signal } = controller;
   const finish = () => controller.abort();
@@ -150,7 +153,7 @@ if (opening && entry && !location.hash && scrollY === 0) {
 
 /** Reuse the native research index; its containing block ends before publications. */
 const fieldbook = document.querySelector<HTMLElement>('[data-fieldbook]');
-const index = fieldbook?.querySelector<HTMLElement>('.theme-index');
+const index = fieldbook?.querySelector<HTMLElement>('[data-section-index]');
 if (fieldbook && index && 'IntersectionObserver' in window) {
   const sections = [...fieldbook.querySelectorAll<HTMLElement>('.research-theme')];
   const links = [...index.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')];

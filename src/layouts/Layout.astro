@@ -13,7 +13,9 @@ const t = translator(locale);
 const canonical = new URL(canonicalPath ?? pageUrl(currentPage ?? 'home', locale), Astro.site!);
 const socialImage = new URL(assetUrl('social-preview.png'), Astro.site!);
 const targetPage = languageTarget ?? currentPage ?? 'home';
-const languageUrl = (next: Locale) => `${pageUrl(targetPage, next)}${languageAnchor ? `#${languageAnchor}` : ''}`;
+const homeEntryUrl = `${pageUrl('home', locale)}#site-header`;
+const navigationUrl = (id: PageId) => id === 'home' ? homeEntryUrl : pageUrl(id, locale);
+const languageUrl = (next: Locale) => `${pageUrl(targetPage, next)}${languageAnchor ? `#${languageAnchor}` : targetPage === 'home' ? '#site-header' : ''}`;
 const displayName = locale === 'en' ? 'Chi-An Chen' : '陳麒安';
 const homeLabel = locale === 'en' ? 'Chi-An Chen — Home' : '陳麒安 Chi-An Chen — 首頁';
 const hasOpening = Astro.slots.has('opening');
@@ -22,6 +24,18 @@ const hasOpening = Astro.slots.has('opening');
 <html lang={locale} data-design="editorial" data-opening={hasOpening ? '' : undefined}>
   <head>
     <meta charset="UTF-8" />
+    {!noindex && currentPage && <script is:inline>
+      (() => {
+        const key = 'chi-an-chen-opening-seen';
+        let seen = false;
+        try { seen = sessionStorage.getItem(key) === '1'; } catch { /* Native anchors remain the fallback. */ }
+        const navigation = performance.getEntriesByType('navigation')[0];
+        if (seen || location.hash || navigation?.type === 'reload' || navigation?.type === 'back_forward') {
+          document.documentElement.dataset.openingSeen = '';
+        }
+        try { sessionStorage.setItem(key, '1'); } catch { /* Storage is optional. */ }
+      })();
+    </script>}
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <meta name="theme-color" content={hasOpening ? '#000000' : '#f7f5f0'} />
@@ -56,9 +70,9 @@ const hasOpening = Astro.slots.has('opening');
     <a class="skip-link" href="#main">{t('Skip to content')}</a>
     <slot name="opening" />
     <header class="site-header container" id="site-header" tabindex={hasOpening ? '-1' : undefined}>
-      <a class="wordmark" href={pageUrl('home', locale)} aria-label={homeLabel}>{displayName}<span aria-hidden="true">.</span>{locale === 'zh-Hant' && <small lang="en">Chi-An Chen</small>}</a>
+      <a class="wordmark" href={homeEntryUrl} aria-label={homeLabel}>{displayName}<span aria-hidden="true">.</span>{locale === 'zh-Hant' && <small lang="en">Chi-An Chen</small>}</a>
       <nav class="desktop-navigation" aria-label={t('Main navigation')}><ul class="nav-list plain-list" role="list">
-        {pages.map(page => <li><a href={pageUrl(page.id, locale)} aria-current={currentPage === page.id ? 'page' : undefined}>{t(page.label)}</a></li>)}
+        {pages.map(page => <li><a href={navigationUrl(page.id)} aria-current={currentPage === page.id ? 'page' : undefined}>{currentPage === page.id && <span class="nav-active-pill" aria-hidden="true"></span>}<span class="nav-label">{t(page.label)}</span></a></li>)}
       </ul></nav>
       <nav class="language-switch" aria-label={t('Language')}>
         <a href={languageUrl('zh-Hant')} lang="zh-Hant" hreflang="zh-Hant" aria-label="切換至繁體中文" aria-current={locale === 'zh-Hant' ? 'true' : undefined}>繁中</a>
@@ -68,7 +82,7 @@ const hasOpening = Astro.slots.has('opening');
     </header>
     <main id="main" class="container" tabindex="-1"><slot /></main>
     <footer class="site-footer container">
-      <div class="footer-identity"><a class="wordmark" href={pageUrl('home', locale)} aria-label={homeLabel}>{displayName}{locale === 'zh-Hant' && <small lang="en">Chi-An Chen</small>}</a><p>{t('AI research & engineering.')}</p></div>
+      <div class="footer-identity"><a class="wordmark" href={homeEntryUrl} aria-label={homeLabel}>{displayName}{locale === 'zh-Hant' && <small lang="en">Chi-An Chen</small>}</a><p>{t('AI research & engineering.')}</p></div>
       <nav aria-label={t('Footer navigation')}><ul class="footer-links plain-list" role="list">
         {pages.filter(page => page.id !== 'home').map(page => <li><a href={pageUrl(page.id, locale)} aria-current={currentPage === page.id ? 'page' : undefined}>{t(page.label)}</a></li>)}
         <li><a href={profiles.linkedin} lang="en">LinkedIn <span aria-hidden="true">↗</span></a></li>

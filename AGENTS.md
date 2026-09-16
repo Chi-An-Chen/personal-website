@@ -131,7 +131,15 @@ with the English statement “From perception, to reasoning, to practice.” in 
 locales. The pure-black opening fills the first viewport, followed in document
 order by the navigation and existing person hero with its single h1. Hide the
 Home scrollbar with CSS while preserving native scrolling and keyboard access.
-The statement is visible immediately and waits for input. The first downward
+The Home prologue may use one finite initial line-by-line reveal. Its three
+existing lines may reveal through opacity, blur, and short upward motion over
+approximately one second. The animation must never block scrolling or
+navigation. Reduced-motion and unsupported browsers show the final text
+immediately. Show the prologue only on the first primary-page entry in a tab
+session. Later Home visits, reloads, and history returns begin at the header
+and biography. Internal Home links use `#site-header` as a native fallback;
+the small synchronous head check may use sessionStorage before body paint.
+Compatibility pages and 404 remain script-free. The statement waits for input. The first downward
 wheel/swipe or keyboard gesture may smoothly advance to the header once; the
 Scroll link remains a native anchor. Do not auto-enter on a timer or lock scrolling.
 Respect reduced motion and allow oversized opening text to scroll normally.
@@ -142,16 +150,20 @@ the header and biography; it must not bring the opening back.
 Primary pages may opt selected heading clusters and concept figures into the
 shared `MotionRuntime.astro` / `src/scripts/motion.ts` enhancement. HTML and base
 CSS must remain visible. Start finite, reveal-once animations only on entry;
-never introduce an unrevealed hidden state, scroll-dependent scaling, scrubbed
-text, parallax, pinned content, or page transitions. Ordinary body copy and
-records remain stable. Settle motion on focus, anchors, history restoration,
+never introduce an unrevealed hidden state for ordinary body copy, records, or
+page content, scroll-dependent scaling, scrubbed text, parallax, or pinned
+content. Page-content transitions remain prohibited. The main-navigation active
+pill is the sole animated cross-document View Transition element. Static named
+navigation-label snapshots may keep text above the transition overlay; they
+must not move or fade. The page/root content must not fade, slide, morph, or
+otherwise animate between routes. Ordinary body copy and records remain stable. Settle motion on focus, anchors, history restoration,
 reduced motion, and print. Keep CSS figure inspection available without JS.
 
 Research alone enhances its existing native theme index with desktop sticky
 orientation, contained by the three themes. Mobile, short viewports, and no-JS
 use the normal-flow index. Preserve native links, focus and details/summary.
 No animation dependencies, continuous scroll handlers, or permanent will-change.
-Keep the shared runtime below 4 KiB gzip and added CSS below 3 KiB gzip; validate
+Keep the combined opening check and shared runtime below 4 KiB gzip and added CSS below 3 KiB gzip; validate
 the exact runtime/keyframes in the build check. Compatibility pages and 404 stay
 script-free. See `docs/motion-identity-review.md` for the implementation and QA.
 

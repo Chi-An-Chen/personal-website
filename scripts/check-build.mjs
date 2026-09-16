@@ -36,6 +36,8 @@ for (const file of files) assert(
   `Unexpected publishable file: ${file}`,
 );
 const htmlPages = new Map(await Promise.all(expectedPages.map(async file => [file, await readFile(resolve(root,file),'utf8')])));
+const zhCopy=JSON.parse(await readFile('src/i18n/zh.json','utf8'));
+const navLabels=['Home','Research','Experience','About'];
 let checkedLinks = 0;
 async function checkReference(raw, from, allowExternal = false) {
   assert(raw && raw !== '#', `Empty reference: ${from}`);
@@ -75,13 +77,18 @@ for (const [file,html] of htmlPages) {
   const hasOpening = file === 'index.html' || file === 'zh/index.html';
   assert(html.includes(`<html lang="${locale}" data-design="editorial"${hasOpening ? ' data-opening' : ''}>`),`Language, design and Home opening: ${file}`);
   const scripts = [...html.matchAll(/<script\b([^>]*)>([^]*?)<\/script>/gi)];
-  assert.equal(scripts.length,isPrimary ? 1 : 0,`One motion module on primary pages only: ${file}`);
+  assert.equal(scripts.length,isPrimary ? 2 : 0,`Opening bootstrap and motion module on primary pages only: ${file}`);
   if(isPrimary) {
-    const [,attributes,source] = scripts[0];
+    const [,bootstrapAttributes,bootstrap] = scripts[0];
+    assert.equal(bootstrapAttributes.trim(),'','Only the approved synchronous opening bootstrap may precede the motion module');
+    assert(html.indexOf(scripts[0][0]) < html.indexOf('</head>'),`Opening state must be set before body paint: ${file}`);
+    assert(bootstrap.includes('sessionStorage.getItem(key)') && bootstrap.includes('sessionStorage.setItem(key') && bootstrap.includes('dataset.openingSeen') && bootstrap.includes("'chi-an-chen-opening-seen'"),`Unexpected opening bootstrap: ${file}`);
+    const [,attributes,source] = scripts[1];
     assert.equal(attributes.trim(),'type="module"',`Only the inline Astro motion module is allowed: ${file}`);
     assert(source.includes('[data-reveal-group]') && source.includes('[data-fieldbook]'),`Unexpected module: ${file}`);
+    assert(source.includes('[data-section-index]') && !source.includes('.theme-index'),`Stable section-index selector: ${file}`);
     assert(!/\b(?:fetch|XMLHttpRequest|WebSocket|sendBeacon|eval)\s*\(|\bimport\s*(?:\(|["'{*])/.test(source),`Unexpected network or imported runtime: ${file}`);
-    assert(gzipSync(source).length <= 4096,`Motion module exceeds 4 KiB gzip: ${file}`);
+    assert(gzipSync(bootstrap).length + gzipSync(source).length <= 4096,`Opening bootstrap and motion module exceed 4 KiB gzip: ${file}`);
     motionModules.add(source);
   }
   assert(!/\son\w+\s*=/i.test(html),`Unexpected inline event handler: ${file}`);
@@ -97,14 +104,16 @@ for (const [file,html] of htmlPages) {
   assert(header && footer,`Missing navigation: ${file}`);
   const headerPaths=[...header.matchAll(/href="([^"]+)"/g)].map(m=>m[1]);
   const target = compatibility[route] ?? (isPrimary ? (route ? `${route}/` : '') : '');
-  const languagePaths = [`${base}zh/${target}`, `${base}${target}`];
-  assert.deepEqual(headerPaths,[localizedUrl(''),...primary.map(route=>localizedUrl(route)),...languagePaths],`Navigation and same-page language links: ${file}`);
+  const languageFragment = target ? '' : '#site-header';
+  const languagePaths = [`${base}zh/${target}${languageFragment}`, `${base}${target}${languageFragment}`];
+  const homeEntryUrl = `${localizedUrl('')}#site-header`;
+  assert.deepEqual(headerPaths,[homeEntryUrl,homeEntryUrl,...primary.slice(1).map(route=>localizedUrl(route)),...languagePaths],`Navigation and same-page language links: ${file}`);
   const switcher=header.match(/<nav class="language-switch"[^]*?<\/nav>/)?.[0] ?? '';
   assert.equal((switcher.match(/aria-current="true"/g)||[]).length,1,`Current language: ${file}`);
   assert(switcher.includes(`hreflang="${locale}"`),`Language attribute: ${file}`);
   assert(!/<details\b/.test(header),`Unwanted collapsed menu: ${file}`);
   const footerPaths=[...footer.matchAll(/href="([^"]+)"/g)].map(m=>m[1]);
-  assert.deepEqual(footerPaths,[localizedUrl(''),...primary.slice(1).map(route=>localizedUrl(route)),...externalLinks],`Final footer: ${file}`);
+  assert.deepEqual(footerPaths,[homeEntryUrl,...primary.slice(1).map(route=>localizedUrl(route)),...externalLinks],`Final footer: ${file}`);
   const canonicalPath = compatibility[route] ? compatibility[route].split('#')[0] : file==='404.html' ? '404.html' : route ? `${route}/` : '';
   const expectedCanonical=new URL(`${base}${prefix}${canonicalPath}`,site).href;
   const canonical=decode(html.match(/rel="canonical" href="([^"]+)"/)?.[1] ?? '');
@@ -122,7 +131,12 @@ for (const [file,html] of htmlPages) {
     assert.equal(image,new URL(`${base}social-preview.png`,site).href);
     await checkReference(image,file);
   }
-  if(isPrimary) assert.equal((header.match(/aria-current="page"/g)||[]).length,1,`Current nav item: ${file}`);
+  if(isPrimary) {
+    const mainNav=header.match(/<nav class="desktop-navigation"[^]*?<\/nav>/)?.[0] ?? '';
+    assert.equal((mainNav.match(/aria-current="page"/g)||[]).length,1,`Current nav item: ${file}`);
+    assert.equal((mainNav.match(/class="nav-active-pill" aria-hidden="true"/g)||[]).length,1,`One decorative active pill: ${file}`);
+    assert.deepEqual([...mainNav.matchAll(/<span class="nav-label">([^<]+)<\/span>/g)].map(match=>decode(match[1])),navLabels.map(label=>isZh ? zhCopy[label] : label),`Main navigation labels: ${file}`);
+  }
   if(compatibility[route]) {
     assert(html.includes('data-compatibility-target') && html.includes(`href="${base}${compatibility[route]}"`),`Compatibility fallback: ${file}`);
     assert(!/http-equiv="refresh"|HTTP 301/i.test(html),`Compatibility pages must remain readable: ${file}`);
@@ -144,20 +158,35 @@ for(const file of files.filter(file=>/\.(css|svg|xml|txt)$/.test(file))) {
     const raw=match[1]||match[2];if(!raw.startsWith('#')) await checkReference(raw,file);
   }
 }
+const builtCss=[...(await Promise.all(files.filter(file=>file.endsWith('.css')).map(file=>readFile(resolve(root,file),'utf8')))), ...htmlPages.values()].join('\n');
+assert(builtCss.includes('@starting-style') && builtCss.includes('blur(6px)'), 'Home prologue line reveal ships in production CSS');
+assert(builtCss.includes('@view-transition') && builtCss.includes('view-transition-name:nav-pill') && builtCss.includes('view-transition-name:none'), 'Navigation-only cross-document transition CSS');
+assert(builtCss.includes('view-transition-name:nav-labels') && builtCss.includes('view-transition-name:nav-current-label') && /::view-transition-group\(nav-labels\)\{[^}]*animation:none/.test(builtCss) && /::view-transition-group\(nav-current-label\)\{[^}]*animation:none/.test(builtCss), 'Static navigation text remains above the moving pill');
 const sitemap=await readFile(resolve(root,'sitemap.xml'),'utf8');
 assert.deepEqual([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]),localizedPrimary.map(route=>new URL(`${base}${route ? `${route}/` : ''}`,site).href),'Sitemap includes only primary canonical URLs');
 assert((await readFile(resolve(root,'robots.txt'),'utf8')).includes(`Sitemap: ${new URL(`${base}sitemap.xml`,site)}`),'Robots sitemap');
 for(const file of fontFiles) assert.equal((await readFile(resolve(root,file))).subarray(0,4).toString(),'wOF2',`Font signature: ${file}`);
 const social=await readFile(resolve(root,'social-preview.png'));
 assert.equal(social.subarray(1,4).toString(),'PNG');assert.equal(social.readUInt32BE(16),1200);assert.equal(social.readUInt32BE(20),630);
-const zhCopy=JSON.parse(await readFile('src/i18n/zh.json','utf8'));
 assert(Object.values(zhCopy).every(value=>typeof value==='string'&&value.trim()),'Empty translation');
 for(const prefix of ['', 'zh/']) {
 const home=htmlPages.get(`${prefix}index.html`), research=htmlPages.get(`${prefix}research/index.html`), experience=htmlPages.get(`${prefix}experience/index.html`), about=htmlPages.get(`${prefix}about/index.html`);
 assert(home.includes('class="prologue-statement" lang="en"') && home.includes('From perception,') && home.includes('to reasoning,') && home.includes('to practice.'),'Shared English prologue');
+assert.equal((home.match(/class="feature-evidence"/g)||[]).length,3,'Three Home evidence lines');
+const evidence=[
+ ['Fine-grained visual categorization','Bounded reasoning','Parameter-efficient fine-tuning with DoRA'],
+ ['Matched-data ablation','Error injection','Accuracy–efficiency analysis'],
+ ['Document retrieval','SQL lookup','API integration'],
+];
+for(const items of evidence) {
+ const line=items.map(item=>prefix ? zhCopy[item] : item).join(' · ');
+ assert(home.includes(`class="feature-evidence">${escape(line)}</p>`) || home.includes(`class="feature-evidence">${line}</p>`),`Home evidence: ${line}`);
+}
 assert(home.indexOf('class="prologue"') < home.indexOf('class="site-header') && home.indexOf('class="site-header') < home.indexOf('class="editorial-hero"'),'Prologue precedes navigation and the existing hero');
 assert(home.includes('href="#site-header"') && home.includes(prefix ? '往下閱讀' : '>Scroll'),'Native localized prologue link');
 assert(/<div\b[^>]*\sdata-fieldbook(?:\s|=|>)/.test(research) && !/<div\b[^>]*\sdata-fieldbook(?:\s|=|>)/.test(experience),'Research-only orientation');
+assert.equal((research.match(/<nav\b[^>]*\sdata-section-index(?:\s|=|>)/g)||[]).length,1,'Research tracked section index');
+assert(!/<nav\b[^>]*\sdata-section-index(?:\s|=|>)/.test(experience) && !/<nav\b[^>]*\sdata-section-index(?:\s|=|>)/.test(about),'Other section indexes remain static');
 function assertOrder(html,values,label) { let previous=-1;for(const value of values) { const position=html.indexOf(value);assert(position>previous,`${label}: ${value}`);previous=position; } }
 assertOrder(home,['id="selected-agricultural-vlm"','id="selected-reasoning-verification"','id="selected-retrieval-applications"'],'Home sequence');
 assertOrder(research,['id="agricultural-vlm"','id="reasoning-verification"','id="visual-research"','id="publications-title"'],'Research sequence');

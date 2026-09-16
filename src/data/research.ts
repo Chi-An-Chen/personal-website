@@ -1,10 +1,10 @@
 import { publications } from './publications';
 export type PublicationId = (typeof publications)[number]['id'];
-import type { ConceptKind } from './types';
+import { assertHomeEvidence, type ConceptKind } from './types';
 export type { ConceptKind } from './types';
 export interface ResearchTheme {
   id: string; title: string; shortTitle: string; summary: string;
-  question: string; contribution: string; preview?: string; approach?: string[]; methods: string[];
+  question: string; contribution: string; preview?: string; approach?: string[]; methods: string[]; homeEvidence?: string[];
   kind: 'research' | 'collaborative-research'; visual?: ConceptKind;
   publicationIds: PublicationId[];
 }
@@ -21,6 +21,7 @@ export const researchThemes: ResearchTheme[] = [
       'The study evaluates supervision mixtures and reasoning formats through ablations, classification and cross-domain evaluation, and hardware profiling. The final implementation uses parameter-efficient fine-tuning with DoRA.',
     ],
     methods: ['Fine-grained visual categorization', 'Decoupled supervision', 'Bounded reasoning', 'Parameter-efficient fine-tuning with DoRA', 'Ablation studies'],
+    homeEvidence: ['Fine-grained visual categorization', 'Bounded reasoning', 'Parameter-efficient fine-tuning with DoRA'],
   },
   {
     id: 'reasoning-verification', title: 'Reasoning and verification in small language models',
@@ -34,6 +35,7 @@ export const researchThemes: ResearchTheme[] = [
       'The study distinguishes answer accuracy from format adherence, output length, and inference time. Verification benefits depend on the error and model configuration; a complementary Efficient CoT pipeline explores token-budget-filtered supervision, with its data and training differences considered when interpreting results.',
     ],
     methods: ['Mathematical reasoning', 'Matched-data ablation', 'Structured supervision', 'Error injection', 'Accuracy–efficiency analysis'],
+    homeEvidence: ['Matched-data ablation', 'Error injection', 'Accuracy–efficiency analysis'],
   },
   {
     id: 'visual-research', title: 'Visual recognition and medical image segmentation',
@@ -45,4 +47,5 @@ export const researchThemes: ResearchTheme[] = [
     publicationIds: ['fahu-mamba', 'ssiu-net', 'transformer-mamba-unet', 'lvit-cb', 'lvit-cb-itaoi'],
   },
 ];
+assertHomeEvidence(researchThemes);
 export const identityStatement = 'I study and build AI systems across language and vision. My research examines visual grounding and reasoning under limited model capacity, alongside applied work in retrieval-based systems and AI engineering.';

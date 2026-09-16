@@ -12,6 +12,8 @@ html[data-opening]::-webkit-scrollbar { display: none; }
   color: var(--paper);
   background: #000;
 }
+/* The head bootstrap marks return visits before the opening can paint. */
+html[data-opening-seen] .prologue { display: none; }
 .prologue-content {
   min-height: 100svh;
   display: grid;
@@ -27,6 +29,19 @@ html[data-design='editorial'] .prologue-statement[lang='en'] {
   letter-spacing: -.04em;
 }
 .prologue-statement span { display: block; }
+@media (prefers-reduced-motion: no-preference) {
+  .prologue-statement > span {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+    transition: opacity 420ms var(--motion-ease), filter 520ms var(--motion-ease), transform 680ms var(--motion-ease);
+  }
+  .prologue-statement > span:nth-child(2) { transition-delay: 160ms; }
+  .prologue-statement > span:nth-child(3) { transition-delay: 320ms; }
+  @starting-style {
+    .prologue-statement > span { opacity: 0; filter: blur(6px); transform: translateY(22%); }
+  }
+}
 .prologue-next { justify-self: end; display:inline-flex; align-items:center; min-height:44px; margin-top:48px; }
 .prologue-next, .prologue-next:hover { color: var(--paper); }
 .prologue-next:focus-visible { outline-color: var(--paper); }
@@ -47,15 +62,25 @@ html[data-design='editorial'] .prologue-statement[lang='en'] {
   [data-reveal='figure'] { --motion-rise: 12px; --motion-duration: 480ms; }
   [data-reveal='second'] { --reveal-order: 1; }
   [data-reveal='third'] { --reveal-order: 2; }
-  .nav-list a::after { transition: transform 180ms var(--motion-ease); }
 }
-html[data-design='editorial'] .nav-list a { position: relative; text-decoration: none; }
-.nav-list a::after {
-  content: ''; position: absolute; inset-inline: 0; bottom: 8px;
-  height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left;
+@view-transition { navigation: auto; }
+:root { view-transition-name: none; }
+@media (prefers-reduced-motion: no-preference) {
+  /* Document transitions use a top layer. Static label snapshots keep navigation readable above the moving pill. */
+  .nav-list { view-transition-name: nav-labels; }
+  .nav-active-pill { view-transition-name: nav-pill; }
+  .nav-list a[aria-current='page'] .nav-label { view-transition-name: nav-current-label; }
+  ::view-transition-group(nav-labels) { z-index: 1; animation: none; }
+  ::view-transition-old(nav-labels) { opacity: 0; animation: none; }
+  ::view-transition-new(nav-labels) { animation: none; }
+  ::view-transition-group(nav-current-label) { z-index: 2; animation: none; }
+  ::view-transition-old(nav-current-label) { opacity: 0; animation: none; }
+  ::view-transition-new(nav-current-label) { animation: none; }
+  ::view-transition-group(nav-pill), ::view-transition-old(nav-pill), ::view-transition-new(nav-pill) {
+    animation-duration: 360ms;
+    animation-timing-function: var(--motion-ease);
+  }
 }
-.nav-list a[aria-current='page']::after, .nav-list a:focus-visible::after { transform: scaleX(1); }
-@media (hover: hover) and (pointer: fine) { .nav-list a:hover::after { transform: scaleX(1); } }
 
 @media (max-width: 600px) {
   :root { --motion-rise: 10px; --motion-duration: 400ms; --motion-stagger: 0ms; }

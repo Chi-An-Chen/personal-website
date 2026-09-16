@@ -107,3 +107,36 @@ Experience／About 保留原本靜態索引。手機、短視窗、無 JavaScrip
 最終畫面檢視涵蓋宣言首屏、原人物 hero、Research 主題與索引、圖解 focus、Experience 與 About 的雙語換行。宣言作為唯一新開場，人物介紹緊接；方法圖以路徑而非裝飾提供互動識別。保留的效果都不要求讀者等待；正文閱讀速度不受進場控制。
 
 原始資料、QA 截圖、baseline dist、效能報告均留在被 Git 忽略的本機工作目錄；索引中沒有 reference_data 或 work 檔案。網站依賴與 lockfile 未變更。本輪未推送、部署或更改已發佈網站。
+
+## 2026-09-16 Motion 與設計系統細修
+
+本節記錄後續的五項限定修改；上方數字是前一輪的歷史驗收，不代表本輪重新量測。
+
+- Home 開場沿用原三行文字與 span，以 `@starting-style` 完成逐行 opacity／6px blur／22% 向上 reveal，間隔 160ms，最後一行約 1 秒完成。CSS 不支援時直接顯示；reduced motion 也直接顯示。原捲動進站、離場後移除及返回頂部行為保留。
+- 主導覽保留四個原生連結與 `aria-current="page"`，只在目前項目加 `aria-hidden` 的深色 pill；移除舊底線。參考 [BeUI Tabs](https://beui.dev/components/motion/tabs) 的獨立背景指示器與上層文字關係，未引入其 React、Motion、tab semantics、內容切換動畫或外層 capsule。主頁以 native cross-document View Transition 命名 `nav-pill`，root 設為 `none`，360ms 沿用現有 easing。瀏覽器將 transition 畫面置於頁面上層，因此另命名兩個**不動畫**的導覽文字快照，避免切換時整排文字被膠囊快照蓋住；只有 pill 位移與改變寬度。這是規格中「只命名 pill」的實作偏差，未加入正文或整頁轉場。reduced motion 與不支援的引擎直接顯示靜態 pill。
+- Research 改用共用 `PageHeading` 的多行 lead；Research／Experience／About 改用 `SectionIndex`。Research 的原 observer 改查 `data-section-index`，仍保留 `data-fieldbook`、sticky 範圍與 `aria-current="location"`。角色、學歷、獎項、論文與學習紀錄共用 editorial-record CSS，但維持各自的 HTML 語意與順序。
+- Home 三個 Selected Work 從資料層的既有 methods 選出指定 evidence；build-time invariant 確認每項仍在 methods。英文原文與既有繁中翻譯共用一份方法資料，呈現為可換行的淡色文字行。
+- 三個 WOFF2 原檔共 **416,832 bytes**，subset 後共 **150,532 bytes**，減少 **63.9%**。保留 Basic Latin、Latin-1、Latin Extended A／B／Additional、combining marks、General Punctuation、Currency Symbols、Letterlike Symbols、Arrows。逐字元比對所有正式 HTML：原字型涵蓋而網站使用的字元沒有遺失；繁中仍使用系統 CJK fallback。字型名稱、授權與 CSS 路徑不變。
+
+本輪對正式 dist 執行 Chromium／WebKit 各 81 組頁面、寬度、motion、no-JS 與 200% 根文字檢查，Firefox 核心矩陣 32 組；三引擎另檢查深連結、reload、正反向導覽、Back／Forward、開場 ArrowDown、字型失敗、no-JS、reduced motion 與鍵盤 focus，均通過。Research 直接深連結曾被 sticky 索引遮住，已修正 CSS 優先序並重驗。Chromium 的八次主導覽切換均觀察到命名的 View Transition，root 皆為 `none`；另於 `pagereveal` 後逐幀讀取 pill group，確認 0–323ms 間位置與寬度連續變化，360ms 結束。本輪 WebKit／Firefox session 沒有觀察到命名轉場，靜態 pill 與一般跨頁導覽正常。所有引擎的 reduced motion pill 均沒有 transition name。最終目視檢查涵蓋 Home 開場與人物區、三組 evidence、Research 中英索引、手機換行及 Chrome 導覽轉場中途畫面。
+
+Chromium 另以新瀏覽情境逐幀抽樣開場：最初三行 opacity 為 0；約 160ms 時第二行開始，約 320ms 時第三行開始，約 1.1 秒時全部完成。這項抽樣重複三次得到相同階段順序。正式 JS module 的 gzip 仍低於 4 KiB；以本輪與 Git baseline 的正式輸出 CSS 產物逐項 gzip 相加，增量為 511 bytes，低於 3 KiB 預算。
+
+Lighthouse mobile 為同一本機 preview 設定下各跑一次的實驗室比較，不代表 field data 或多次中位數；只比較本輪字型 subset 前後。兩次的 Accessibility／Best Practices／SEO 均為 100，TBT 均為 0ms。
+
+| 頁面 | Performance | LCP | CLS | font transfer |
+| --- | --- | --- | --- | --- |
+| Home | 94 → 99 | 2.56s → 1.65s | 0.00005 → 0.00005 | 261,852 → 97,792 bytes |
+| Research | 87 → 98 | 3.16s → 1.80s | 0.01083 → 0.01083 | 417,798 → 151,492 bytes |
+
+最終 CSS 修改後再各跑一次，Home／Research 仍為 99／98 分、LCP 1.65／1.80s、TBT 0ms、CLS 與 font transfer 不變。
+
+本輪 Lighthouse 原始 JSON 與瀏覽器操作腳本位於 Git 忽略的 `work/motion-polish/`，截圖位於 Git 忽略的 `output/playwright/`。QA 使用瀏覽器引擎與模擬尺寸，未使用實體手機、Safari.app 或螢幕閱讀器使用者測試。沒有變更 runtime dependency、lockfile、GitHub Actions 或正式部署。
+
+### 後續調整：每個分頁只顯示一次開場
+
+依使用者補充，黑色三行開場只在同一瀏覽分頁首次進入四個主頁時顯示。共用 layout 在 `<head>` 以同步、可失敗退化的 `sessionStorage` 檢查標記後續造訪；Home CSS 在 body 繪製前隱藏已看過的開場。所有共用 Home 導覽與首頁語言切換使用 `#site-header` 原生錨點，直接到導覽與人物介紹。Canonical、hreflang 和 sitemap 仍指向沒有 fragment 的正式網址。相容頁與 404 維持無腳本。
+
+Home runtime 在略過開場時不安裝開場 observer 或手勢攔截；未略過時仍保留原本滾動離場補償，並在持續頁面快取返回時強制移除已看過的開場。沒有 JavaScript 或儲存空間不可用時，站內 Home 連結仍可靠原生錨點進入介紹；沒有 JavaScript 的裸首頁重訪無法記住分頁狀態。
+
+正式 dist 的瀏覽器驗收涵蓋 Chromium、Firefox、WebKit 的首次英文／繁中 Home、Research→Home、裸網址重訪；Chromium 另驗證 reload、Back／Forward、語言切換、深連結、reduced motion、儲存空間拒絕與無 JavaScript 錨點。三引擎通過；WebKit 在導覽提交後、樣式載入前短暫可讀到未套樣式 DOM，樣式完成後開場保持隱藏。模擬 `pageshow.persisted` 驗證可移除仍在首屏的舊開場；本輪自動化環境未實際觀察到 BFCache 命中。兩段正式 inline 腳本 gzip 合計 2,279 bytes，低於 4 KiB 預算。

@@ -35,11 +35,11 @@ const pageUrl = (id: Parameters<typeof basePageUrl>[0]) => basePageUrl(id, local
   <section class="selected-work" aria-labelledby="selected-title">
     <div class="section-top" data-reveal-group><h2 data-reveal id="selected-title">{t("Selected work")}</h2><p>{t("Research questions. Practical systems.")}</p></div>
     {[vlm, reasoning].map((theme, i) => <article class:list={['featured-work', i === 1 && 'featured-work--reverse']} id={`selected-${theme.id}`}>
-      <div class="feature-copy" data-reveal-group><p class="kicker" data-reveal>0{i + 1} / {t(i === 0 ? 'Graduate research' : 'Collaborative research')}</p><h3 data-reveal="second">{t(theme.title)}</h3><p class="feature-summary" data-reveal="third">{t(theme.summary)}</p><p>{t(theme.preview!)}</p><a class="editorial-link" href={`${pageUrl('research')}#${theme.id}`}>{t("Explore the research")} <span aria-hidden="true">↗</span></a></div>
+      <div class="feature-copy" data-reveal-group><p class="kicker" data-reveal>0{i + 1} / {t(i === 0 ? 'Graduate research' : 'Collaborative research')}</p><h3 data-reveal="second">{t(theme.title)}</h3><p class="feature-summary" data-reveal="third">{t(theme.summary)}</p><p class="feature-evidence">{theme.homeEvidence!.map(t).join(' · ')}</p><p>{t(theme.preview!)}</p><a class="editorial-link" href={`${pageUrl('research')}#${theme.id}`}>{t("Explore the research")} <span aria-hidden="true">↗</span></a></div>
       <ConceptFigure locale={locale} kind={theme.visual!} />
     </article>)}
     <article class="featured-work featured-work--process" id={`selected-${retrievalWork.id}`}>
-      <div class="feature-copy" data-reveal-group><p class="kicker" data-reveal>{t("03 / Applied engineering")}</p><h3 data-reveal="second">{t(retrievalWork.title)}</h3><p class="feature-summary" data-reveal="third">{t(retrievalWork.summary)}</p><p>{t(retrievalWork.contribution)}</p><a class="editorial-link" href={`${pageUrl('experience')}#ai-engineering`}>{t("View engineering experience")} <span aria-hidden="true">↗</span></a></div>
+      <div class="feature-copy" data-reveal-group><p class="kicker" data-reveal>{t("03 / Applied engineering")}</p><h3 data-reveal="second">{t(retrievalWork.title)}</h3><p class="feature-summary" data-reveal="third">{t(retrievalWork.summary)}</p><p class="feature-evidence">{retrievalWork.homeEvidence!.map(t).join(' · ')}</p><p>{t(retrievalWork.contribution)}</p><a class="editorial-link" href={`${pageUrl('experience')}#ai-engineering`}>{t("View engineering experience")} <span aria-hidden="true">↗</span></a></div>
       <ConceptFigure locale={locale} kind="retrieval" />
     </article>
   </section>

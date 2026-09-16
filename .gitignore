@@ -35,3 +35,4 @@ pnpm-debug.log*
 
 # Local browser validation artifacts
 /.playwright-cli/
+/output/playwright/
