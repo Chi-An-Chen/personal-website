@@ -1,6 +1,7 @@
 ---
 import { translator, type Locale } from '../../i18n';
 import type { ConceptKind } from '../../data/types';
+import '../../styles/work-demo.css';
 interface Props { kind: ConceptKind; locale: Locale; }
 const { kind, locale } = Astro.props;
 const t = translator(locale);

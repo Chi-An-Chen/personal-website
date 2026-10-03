@@ -5,6 +5,7 @@ import PageHeading from '../editorial/PageHeading.astro';
 import SectionIndex from '../editorial/SectionIndex.astro';
 import DateRange from '../editorial/DateRange.astro';
 import ConceptFigure from '../editorial/ConceptFigure.astro';
+import WorkDemo from '../editorial/WorkDemo.astro';
 import { roles } from '../../data/roles';
 import { engineeringWork, capabilityGroups } from '../../data/engineering';
 import { pageUrl as basePageUrl } from '../../data/profile';
@@ -33,7 +34,7 @@ const pageUrl = (id: Parameters<typeof basePageUrl>[0]) => basePageUrl(id, local
     {engineeringWork.map((work,i) => <article class:list={['engineering-case', i===0 && 'engineering-case--lead']} id={work.id} data-engineering-id={work.id}>
       <div class="case-heading" data-reveal-group><p class="kicker" data-reveal>0{i+1} / {t(i===0 ? 'Retrieval & document applications' : i===1 ? 'Predictive modeling & NLP' : i===2 ? 'Data engineering' : 'Perception & inference')}</p><h3 data-reveal="second">{t(work.title)}</h3><p class="case-summary">{t(work.summary)}</p></div>
       <dl class="case-narrative"><div><dt>{t("Problem")}</dt><dd>{t(work.problem)}</dd></div><div><dt>{t("My work")}</dt><dd>{t(work.contribution)}</dd></div><div><dt>{t("Integration")}</dt><dd>{t(work.integration)}</dd></div></dl>
-      {work.visual && <ConceptFigure locale={locale} kind={work.visual} />}
+      {work.visual && <div class="engineering-illustration"><WorkDemo locale={locale} kind={work.visual} /><details class="engineering-detail"><summary>{t("Full method overview")}</summary><ConceptFigure locale={locale} kind={work.visual} /></details></div>}
       <p class="case-methods"><span>{t("Methods in context")}</span>{work.methods.map(t).join(' · ')}</p>
     </article>)}
   </section>
@@ -58,7 +59,9 @@ const pageUrl = (id: Parameters<typeof basePageUrl>[0]) => basePageUrl(id, local
  .case-narrative dd { margin:0; color:var(--muted); font-size:1.125rem; line-height:1.6; }
  .engineering-case--lead .case-narrative { grid-template-columns:minmax(0,1fr); gap:24px; max-width:920px; }
  .engineering-case--lead .case-narrative > div { display:grid; grid-template-columns:152px minmax(0,1fr); gap:28px; }
- .engineering-case > :global(figure) { margin-top:40px; }
+ .engineering-illustration { max-width:640px; margin-top:36px; }
+ .engineering-detail { margin-top:20px; }
+ .engineering-detail summary { min-height:48px; padding-block:12px; cursor:pointer; color:var(--accent); }
  .engineering-case .case-methods { display:flex; flex-wrap:wrap; gap:8px 24px; margin-top:36px; padding-top:20px; border-top:1px solid var(--line); color:var(--muted); font-size:1rem; }
  .case-methods span { color:var(--ink); font-weight:600; }
  .capabilities-section { display:grid; grid-template-columns:1fr 1.65fr; gap:64px; padding-block:80px; }

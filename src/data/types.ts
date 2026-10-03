@@ -5,7 +5,7 @@ export interface Publication {
 export interface Role {
   id: string; title: string; organization: string; location?: string;
   start: string; startLabel: string; end: string | null; endLabel: string;
-  context?: string; relatedResearch?: string; relatedEngineeringWork?: string;
+  context?: string; deliverySummary?: string; relatedResearch?: string; relatedEngineeringWork?: string;
 }
 export interface Recognition {
   id: string; title: string; date: string; datetime: string;

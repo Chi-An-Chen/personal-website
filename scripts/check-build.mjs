@@ -183,6 +183,7 @@ assert(builtCss.includes('prefers-reduced-motion:no-preference'), 'Animations op
 assert(builtCss.includes('@view-transition') && builtCss.includes('view-transition-name:nav-pill') && builtCss.includes('view-transition-name:none'), 'Navigation-only cross-document transition CSS');
 assert(builtCss.includes('view-transition-name:nav-labels') && builtCss.includes('view-transition-name:nav-current-label') && /::view-transition-group\(nav-labels\)\{[^}]*animation:none/.test(builtCss) && /::view-transition-group\(nav-current-label\)\{[^}]*animation:none/.test(builtCss), 'Static navigation text remains above the moving pill');
 assert(gzipSync(await readFile('src/styles/portfolio.css','utf8')).length <= 3072, 'Added Home CSS exceeds 3 KiB gzip');
+assert(gzipSync(await readFile('src/styles/work-demo.css','utf8')).length <= 3072, 'Detail demo CSS exceeds 3 KiB gzip');
 const homeStyles = (await Promise.all(['src/styles/portfolio.css','src/styles/motion.css'].map(file=>readFile(file,'utf8')))).join('\n');
 assert(gzipSync(homeStyles).length <= 4096, 'Home design and shared motion CSS exceed 4 KiB gzip');
 const motionCss = await readFile('src/styles/motion.css','utf8');
@@ -204,17 +205,33 @@ assert(home.indexOf('class="prologue"') < home.indexOf('class="site-header'),'St
 assert(!home.includes('home-header') && home.includes('content="#000000"'),'Black opening, light biography');
 assert(home.includes('<span>From perception,</span>') && home.includes('<span>to reasoning,</span>') && home.includes('<span>to practice.</span>'),'Original three English phrases');
 assert(home.includes('class="prologue-next" href="#site-header"'),'Native Scroll down fallback');
-assert(home.includes('href="#selected-title"') && home.includes('class="hero-work-index"'),'Hero has native work entry points');
-assert(!home.includes('class="feature-evidence"'),'Deep method lists belong in detail pages');
-assert.equal((home.match(/class="case-facts"/g)||[]).length,3,'Three concise problem/contribution/outcome summaries');
-assert.equal((home.match(/<fieldset class="demo-controls"/g)||[]).length,3,'Three independently labelled native demo controls');
-assert.equal((home.match(/type="radio"/g)||[]).length,9,'Nine native, keyboard-operable demo choices');
-assert.equal((home.match(/ checked(?:\s|>|=)/g)||[]).length,3,'One initial selection per demo');
-for(const kind of ['vlm','reasoning','retrieval']) {
- assert.equal((home.match(new RegExp(`name="demo-${kind}"`,'g'))||[]).length,3,`Independent ${kind} radio group`);
- for(let i=0;i<3;i++) assert(home.includes(`aria-describedby="${kind}-note-${i}"`) && home.includes(`id="${kind}-note-${i}"`),`Accessible ${kind} description ${i}`);
+assert(home.includes('href="#selected-title"') && home.includes(`href="${base}${prefix}experience/#roles"`),'Hero has native accomplishment and role entry points');
+assert(!home.includes('class="case-facts"') && !home.includes('class="work-demo'), 'Detailed cases and demonstrations belong on detail pages');
+assert(!home.includes('class="hero-focus"'), 'Concise introduction without a repeated slogan');
+assert(home.includes(`data-publication-total="${publications.length}"`), 'Publication count is derived from bibliographic records');
+for (const lang of ['en', 'zh-Hant']) {
+ const expected = publications.filter(paper => paper.lang === lang).length;
+ assert(home.includes(`data-publication-language="${lang}">${expected}</dd>`), `Publication language count: ${lang}`);
 }
-assert.equal((home.match(new RegExp(prefix ? '概念示意' : 'Conceptual illustration','g'))||[]).length,3,'Every illustration marked conceptual');
+assert(home.includes(prefix ? '研討會論文' : 'Conference papers'), 'Count identifies its publication type');
+assert(home.includes('2024–2025'), 'Publication years remain scoped');
+assert(home.includes('data-credential-total="5">5</span>'), 'Five credentials exclude course and participation records');
+for (const id of ['avss-2025','is3c-2025','ict-2025']) {
+ const record = home.match(new RegExp(`data-selected-recognition="${id}"[^]*?<\\/li>`))?.[0];
+ assert(record && record.includes(`href="${base}${prefix}about/#${id}"`), `Named award links to its own record: ${id}`);
+ assert(record.includes('2025') && (prefix ? record.includes('團隊') : /team/i.test(record)), `Award year and team context: ${id}`);
+}
+assert(home.includes('GCP Cloud Run') && home.includes(`href="${base}${prefix}experience/#ai-engineering"`), 'Engineering delivery links to its supported role');
+assert.equal((research.match(/<fieldset class="demo-controls"/g)||[]).length,2,'Two native research demos');
+assert.equal((experience.match(/<fieldset class="demo-controls"/g)||[]).length,1,'One native engineering demo');
+for(const [kind, owner] of [['vlm', research],['reasoning', research],['retrieval', experience]]) {
+ assert.equal((owner.match(new RegExp(`name="demo-${kind}"`,'g'))||[]).length,3,`Independent ${kind} radio group on its detail page`);
+ for(let i=0;i<3;i++) assert(owner.includes(`aria-describedby="${kind}-note-${i}"`) && owner.includes(`id="${kind}-note-${i}"`),`Accessible ${kind} description ${i}`);
+ assert(owner.includes(`concept--${kind}`), `Full method overview remains available for ${kind}`);
+}
+assert.equal(((research+experience).match(/type="radio"/g)||[]).length,9,'Nine native, keyboard-operable demo choices');
+assert.equal(((research+experience).match(/<input\b[^>]* checked(?:\s|>|=)/g)||[]).length,3,'One initial selection per demo');
+assert.equal(((research+experience).match(new RegExp(`class="demo-heading"[^>]*><span[^>]*>${prefix ? '概念示意' : 'Conceptual illustration'}</span>`,'g'))||[]).length,3,'Every interactive illustration marked conceptual');
 assert(/<div\b[^>]*\sdata-fieldbook(?:\s|=|>)/.test(research) && !/<div\b[^>]*\sdata-fieldbook(?:\s|=|>)/.test(experience),'Research-only orientation');
 assert.equal((research.match(/<nav\b[^>]*\sdata-section-index(?:\s|=|>)/g)||[]).length,1,'Research tracked section index');
 assert(!/<nav\b[^>]*\sdata-section-index(?:\s|=|>)/.test(experience) && !/<nav\b[^>]*\sdata-section-index(?:\s|=|>)/.test(about),'Other section indexes remain static');

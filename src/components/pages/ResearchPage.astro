@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import ConceptFigure from '../editorial/ConceptFigure.astro';
+import WorkDemo from '../editorial/WorkDemo.astro';
 import MotionRuntime from '../editorial/MotionRuntime.astro';
 import PageHeading from '../editorial/PageHeading.astro';
 import SectionIndex from '../editorial/SectionIndex.astro';
@@ -30,11 +31,11 @@ const pageUrl = (id: Parameters<typeof basePageUrl>[0]) => basePageUrl(id, local
   <section class="research-theme" id={vlm.id} aria-labelledby="vlm-title"><header data-reveal-group>
     <p class="kicker" data-reveal>{t("01 / Graduate research")}</p><h2 id="vlm-title" data-reveal="second">{t(vlm.title)}</h2>
     <p class="research-question">{t(vlm.question)}</p></header>
-    <div class="research-split"><div class="research-copy"><h3>{t("My contribution")}</h3><p>{t(vlm.contribution)}</p><h3>{t("Approach")}</h3>{vlm.approach?.map(paragraph => <p>{t(paragraph)}</p>)}</div><ConceptFigure locale={locale} kind="vlm" /></div>
+    <div class="research-split"><div class="research-copy"><h3>{t("My contribution")}</h3><p>{t(vlm.contribution)}</p><h3>{t("Approach")}</h3>{vlm.approach?.map(paragraph => <p>{t(paragraph)}</p>)}</div><div class="research-illustration"><WorkDemo locale={locale} kind="vlm" /><details class="research-detail"><summary>{t("Full method overview")}</summary><ConceptFigure locale={locale} kind="vlm" /></details></div></div>
     <div class="method-notes"><h3>{t("Methods in context")}</h3><p>{vlm.methods.map(t).join(' · ')}</p></div>
     <details class="research-detail"><summary>{t("More on supervision and evaluation")}</summary><div><p>{t("Teacher-generated descriptions focus on observable morphology without naming a diagnosis; bounded rationales connect visible symptoms to a class label. Direct-label targets use dataset annotations, and all examples derived from the same image remain in the same data split.")}</p><p>{t("Long-form reasoning with explicit self-checking belongs to the preliminary comparison, rather than the required output format of CROP. Cross-domain evaluation also highlights remaining challenges from distribution shift and visually similar disease classes.")}</p></div></details>
   </section>
-  <section class="research-theme" id={reasoning.id} aria-labelledby="reasoning-title"><header data-reveal-group><p class="kicker" data-reveal>{t("02 / Collaborative research")}</p><h2 id="reasoning-title" data-reveal="second">{t(reasoning.title)}</h2><p class="research-question">{t(reasoning.question)}</p></header><div class="research-split research-split--reverse"><div class="research-copy"><h3>{t("My contribution")}</h3><p>{t(reasoning.contribution)}</p><h3>{t("Approach")}</h3>{reasoning.approach?.map(paragraph => <p>{t(paragraph)}</p>)}</div><ConceptFigure locale={locale} kind="reasoning" /></div><div class="method-notes"><h3>{t("Methods in context")}</h3><p>{reasoning.methods.map(t).join(' · ')}</p></div></section>
+  <section class="research-theme" id={reasoning.id} aria-labelledby="reasoning-title"><header data-reveal-group><p class="kicker" data-reveal>{t("02 / Collaborative research")}</p><h2 id="reasoning-title" data-reveal="second">{t(reasoning.title)}</h2><p class="research-question">{t(reasoning.question)}</p></header><div class="research-split research-split--reverse"><div class="research-copy"><h3>{t("My contribution")}</h3><p>{t(reasoning.contribution)}</p><h3>{t("Approach")}</h3>{reasoning.approach?.map(paragraph => <p>{t(paragraph)}</p>)}</div><div class="research-illustration"><WorkDemo locale={locale} kind="reasoning" /><details class="research-detail"><summary>{t("Full method overview")}</summary><ConceptFigure locale={locale} kind="reasoning" /></details></div></div><div class="method-notes"><h3>{t("Methods in context")}</h3><p>{reasoning.methods.map(t).join(' · ')}</p></div></section>
   <section class="research-theme" id={vision.id} aria-labelledby="vision-title"><header data-reveal-group><p class="kicker" data-reveal>{t("03 / Computer vision foundation")}</p><h2 id="vision-title" data-reveal="second">{t(vision.title)}</h2><p class="research-question">{t(vision.summary)}</p></header><div class="vision-contexts"><div><h3>{t("Lightweight biometric recognition")}</h3><p>{t("My research on LViT-CB explores lightweight finger vein recognition through competitive feature selection. The architecture combines convolutional patch embedding with feature competition blocks and attention. Competition across channel and spatial dimensions emphasizes discriminative vein patterns; evaluation considers identification, verification error, and computational cost.")}</p><a class="editorial-link" href={`#${paperAnchor('lvit-cb')}`}>{t("Related publication")} <span aria-hidden="true">↓</span></a></div><div><h3>{t("Medical image segmentation")}</h3><p>{t("My research explores complementary ways to model breast tumor structure in DCE-MRI. FAHU-Mamba combines selective scanning with learnable frequency reweighting to represent indistinct boundaries. SSIU-Net combines state space blocks and Mamba-inspired linear attention to capture local texture and long-range spatial relationships. Both are evaluated on BreastDM.")}</p><a class="editorial-link" href={`#${paperAnchor('fahu-mamba')}`}>{t("Related publications")} <span aria-hidden="true">↓</span></a></div></div><div class="method-notes"><h3>{t("Methods in context")}</h3><p>{vision.methods.map(t).join(' · ')}</p></div><p class="generative-note">{t("My earlier work also includes virtual try-on research and experience reproducing and adapting text-guided fashion-generation methods.")}</p></section>
   </div>
   <section class="editorial-publications" aria-labelledby="publications-title"><div class="section-top" data-reveal-group><h2 data-reveal id="publications-title">{t("Selected publications")}</h2><a class="editorial-link publication-profile" href={ieeeAuthorProfile}>{t("IEEE Xplore author profile")} <span aria-hidden="true">↗</span></a></div><ol class="papers editorial-record-list editorial-record-list--stack-600 plain-list" role="list">{publications.map((paper,index) => <li class="editorial-record" id={`publication-${index+1}`} data-publication-id={paper.id}><div class="paper-meta editorial-record__meta"><span>{paper.venue}</span><time datetime={paper.year}>{paper.year}</time></div><div class="editorial-record__content"><h3 lang={paper.lang}>{paper.title}</h3><p class="paper-authors" lang={paper.lang}>{paper.authors}</p><p class="paper-description">{t(paper.description)}</p><div class="publication-actions">{paper.officialUrl && <a class="editorial-link" href={paper.officialUrl} aria-label={`${t("View on IEEE Xplore")}: ${paper.title}`}>{t("View on IEEE Xplore")} <span aria-hidden="true">↗</span></a>}{paper.award && <a class="editorial-link" href={`${pageUrl('about')}#paper-awards`}>{t("Paper recognition")} <span aria-hidden="true">↗</span></a>}</div></div></li>)}</ol></section>
@@ -49,12 +50,13 @@ const pageUrl = (id: Parameters<typeof basePageUrl>[0]) => basePageUrl(id, local
  .research-theme > header > h2 { max-width:860px; font-size:clamp(2.125rem,4.25vw,3.5rem); line-height:1.15; letter-spacing:-.035em; }
  .research-theme .research-question { max-width:820px; font-size:1.5rem; line-height:1.5; margin-top:28px; }
  .research-split { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr); gap:80px; margin-top:48px; align-items:start; }
+ .research-illustration { min-width:0; }
  .research-copy h3,.vision-contexts h3,.method-notes h3 { font-family:inherit; font-size:1.125rem; font-weight:600; margin-bottom:12px; }
  .research-copy p + h3 { margin-top:32px; }
  .research-copy p { color:var(--muted); }
  .research-copy p + p { margin-top:16px; }
  .research-split--reverse .research-copy { grid-column:2; grid-row:1; }
- .research-split--reverse > figure { grid-column:1; grid-row:1; }
+ .research-split--reverse > .research-illustration { grid-column:1; grid-row:1; }
  .method-notes { display:grid; grid-template-columns:180px minmax(0,1fr); gap:28px; border-top:1px solid var(--line); padding-top:24px; margin-top:40px; }
  .method-notes p { color:var(--muted); font-size:1rem; }
  .research-detail { border-block:1px solid var(--line); margin-top:24px; }
@@ -80,7 +82,7 @@ const pageUrl = (id: Parameters<typeof basePageUrl>[0]) => basePageUrl(id, local
  @media(max-width:1000px) { .research-split { gap:40px; } }
  @media(max-width:800px) {
   .research-split,.vision-contexts { grid-template-columns:minmax(0,1fr); gap:32px; }
-  .research-split--reverse .research-copy,.research-split--reverse > figure { grid-column:auto; grid-row:auto; }
+  .research-split--reverse .research-copy,.research-split--reverse > .research-illustration { grid-column:auto; grid-row:auto; }
  }
  @media(max-width:600px) {
   .research-theme { padding-block:44px; }

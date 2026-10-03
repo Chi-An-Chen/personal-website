@@ -39,7 +39,7 @@ is a secondary profile link, not the hero's organizing principle.
 
 Position the person as AI research & engineering, with agricultural VLM first,
 collaborative reasoning and verification second, and CV / engineering extensions.
-Speech research is excluded. The 2026-10-03 approved portfolio pass supersedes the Phase 1 visual freeze. The user subsequently restored the separate black Scroll down opening; the personal introduction stays light. Preserve factual records and stable anchors; current design and QA are recorded in docs/portfolio-review.md. Website copy is maintained in English and Traditional Chinese; design explanations
+Speech research is excluded. The 2026-10-03 approved portfolio pass supersedes the Phase 1 visual freeze. The user subsequently restored the separate black Scroll down opening; the personal introduction stays light. Preserve factual records and stable anchors; the first-pass design and QA are recorded in docs/portfolio-review.md. The approved second pass is recorded in docs/accomplishment-review.md: Home summarizes research output, personal contributions, named team recognition, engineering delivery, and credentials; detailed interactive illustrations belong on Research and Experience. Website copy is maintained in English and Traditional Chinese; design explanations
 use Traditional Chinese. English remains the default at existing URLs; the four
 Chinese pages live under /zh/. Use shared page components and build-time translations,
 with no client language detection or runtime translation service. Missing Chinese
@@ -140,7 +140,7 @@ oversized-text fallback, native scrolling, optional per-tab first-entry check,
 revisit/reload/history skip, and removal of the offscreen spent opening without
 shifting visible content. Internal Home links retain #site-header.
 
-Three native radio-controlled concept illustrations explain selected work through
+Three native radio-controlled concept illustrations on Research (VLM, reasoning) and Experience (retrieval) explain selected work through
 interruptible CSS transitions. They must work with keyboard, touch, reduced motion
 and no JavaScript. Label them as conceptual; never imply measured model outputs
 or unpublished performance.

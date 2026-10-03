@@ -1,5 +1,7 @@
 # Chi-An Chen 多頁網頁履歷：內容與設計指引
 
+> 2026-10-03 第二輪已核准：保留黑色開場與淺色真人介紹，首頁改為研究主導的成果概覽；論文數與語言分類由既有書目導出，獎項保留團隊歸屬，互動圖移至 Research／Experience。現行範圍與驗證見 [accomplishment-review.md](accomplishment-review.md)。下方第一輪與更早記錄保留為歷史。
+
 > 2026-10-03 最終澄清：保留黑色三行宣言與 Scroll down，往下進入淺色人物介紹與作品入口、三件短案例、互動概念圖、背景與聯絡。依本次使用者核准重新評估美學，以下舊版視覺決策保留為歷史。現行規格見 [portfolio-review.md](portfolio-review.md)。
 
 > 2026-09-14 全站整合完成：Home／Research／Experience／About 已統一 editorial 系統，四個舊路徑保留相容頁。最新架構、建置與瀏覽器驗收以 [deployment-readiness.md](deployment-readiness.md) 為準；下方 Phase 1 與舊七頁紀錄保留為歷史。

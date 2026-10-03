@@ -1,20 +1,21 @@
 ---
 import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
-import WorkDemo from '../editorial/WorkDemo.astro';
 import MotionRuntime from '../editorial/MotionRuntime.astro';
 import portrait from '../../assets/chi-an-chen.webp';
-import { education, profiles, pageUrl as basePageUrl } from '../../data/profile';
+import { profiles, pageUrl as basePageUrl } from '../../data/profile';
 import { researchThemes } from '../../data/research';
 import { retrievalWork } from '../../data/engineering';
-import { translator, dateLabel, type Locale } from '../../i18n';
+import { roles } from '../../data/roles';
+import { publicationOverview, selectedRecognition, credentialCount } from '../../data/overview';
+import { translator, type Locale } from '../../i18n';
 import '../../styles/portfolio.css';
 interface Props { locale: Locale; }
 const { locale } = Astro.props;
 const t = translator(locale);
 const pageUrl = (id: Parameters<typeof basePageUrl>[0]) => basePageUrl(id, locale);
-const selected = [researchThemes[0], researchThemes[1], retrievalWork];
-const labels = ['Graduate research', 'Collaborative research', 'Applied engineering'];
+const [vlm, reasoning, vision] = researchThemes;
+const delivery = roles.find(role => role.id === 'ai-engineering')!;
 ---
 <Layout locale={locale} title={t("Chi-An Chen — AI Research & Engineering")} description={t("Chi-An Chen studies and builds AI systems across language and vision, connecting model adaptation and evaluation with retrieval-based applications.")} currentPage="home">
   <MotionRuntime />
@@ -30,33 +31,49 @@ const labels = ['Graduate research', 'Collaborative research', 'Applied engineer
       <p class="kicker">{t("AI research & engineering")}</p>
       <h1 id="intro-title" tabindex="-1">{locale === 'en' ? 'Chi-An Chen' : '陳麒安'}</h1>
       {locale === 'zh-Hant' && <p class="name-english" lang="en">Chi-An Chen</p>}
-      <p class="hero-focus">{t("Seeing clearly.")}<br />{t("Reasoning carefully.")}</p>
+      <p class="hero-role">{t("M.S. Student · Computer Science")}<br /><span>{t("National Ilan University, Taiwan")}</span></p>
       <p class="hero-description">{t("I study agricultural vision-language models and build AI systems that connect data, reasoning, and practical use.")}</p>
-      <div class="editorial-actions"><a class="editorial-link" href="#selected-title">{t("Explore selected work")} <span aria-hidden="true">↓</span></a><a class="editorial-link secondary" href={pageUrl('experience')}>{t("View experience")} <span aria-hidden="true">↗</span></a></div>
+      <div class="editorial-actions"><a class="editorial-link" href="#selected-title">{t("Research & accomplishments")} <span aria-hidden="true">↓</span></a><a class="editorial-link secondary" href={`${pageUrl('experience')}#roles`}>{t("View experience")} <span aria-hidden="true">↗</span></a></div>
     </div>
-    <div class="hero-profile">
-      <div class="portrait-frame"><Image class="portfolio-portrait" src={portrait} alt={t("Portrait of Chi-An Chen in graduation attire")} width={480} height={663} loading="eager" fetchpriority="high" /></div>
-      <p class="profile-caption">{t("M.S. Student · Computer Science")}<br /><span>{t("National Ilan University, Taiwan")}</span></p>
-    </div>
-    <nav class="hero-work-index" aria-label={t("Selected work")}>{selected.map((item,i) => <a href={`#selected-${item.id}`}><span class="index-number">0{i+1}</span><span>{t(i===0 ? 'Agricultural VLMs' : i===1 ? 'Reasoning & verification' : 'Retrieval applications')}</span><span aria-hidden="true">↘</span></a>)}</nav>
+    <div class="hero-profile"><div class="portrait-frame"><Image class="portfolio-portrait" src={portrait} alt={t("Portrait of Chi-An Chen in graduation attire")} width={480} height={663} loading="eager" fetchpriority="high" /></div></div>
   </section>
-  <section class="portfolio-work" aria-labelledby="selected-title">
-    <div class="section-top"><h2 id="selected-title" tabindex="-1">{t("Three ways into the work.")}</h2><p>{t("Research questions. Practical systems.")}</p></div>
-    {selected.map((item,i) => <article class:list={['portfolio-case', `portfolio-case--${item.visual}`]} id={`selected-${item.id}`} aria-labelledby={`case-title-${i}`}>
-      <div class="case-copy">
-        <p class="kicker">0{i+1} / {t(labels[i])}</p>
-        <h3 id={`case-title-${i}`}>{t(item.portfolio!.title)}</h3>
-        <dl class="case-facts">{[['The question',item.portfolio!.problem],['My work',item.portfolio!.contribution],['The outcome',item.portfolio!.result]].map(([label,copy]) => <div><dt>{t(label)}</dt><dd>{t(copy)}</dd></div>)}</dl>
-        <a class="editorial-link" href={`${pageUrl(i===2 ? 'experience' : 'research')}#${item.id}`}>{t(i===2 ? 'Explore the engineering' : 'Explore the research')} <span aria-hidden="true">↗</span></a>
+
+  <section class="accomplishment-research" aria-labelledby="selected-title">
+    <div class="section-top"><h2 id="selected-title" tabindex="-1">{t("Research & accomplishments")}</h2><p>{t("Questions I study. Work I contribute.")}</p></div>
+    <div class="research-overview">
+      <div class="publication-overview" data-publication-total={publicationOverview.total}>
+        <p class="publication-total"><strong>{publicationOverview.total}</strong><span>{t("Conference papers")}</span></p>
+        <p class="publication-period">{publicationOverview.years.join('–')}</p>
+        <dl class="publication-breakdown"><div><dt>{t("In English")}</dt><dd data-publication-language="en">{publicationOverview.english}</dd></div><div><dt>{t("In Chinese")}</dt><dd data-publication-language="zh-Hant">{publicationOverview.chinese}</dd></div></dl>
+        <p class="publication-context">{t("Biometric recognition, medical image segmentation, and virtual try-on.")}</p>
+        <a class="editorial-link" href={`${pageUrl('research')}#publications-title`}>{t("Papers & evidence")} <span aria-hidden="true">↗</span></a>
       </div>
-      <WorkDemo locale={locale} kind={item.visual!} />
-    </article>)}
+      <div class="research-contributions">
+        <article id="selected-agricultural-vlm"><p class="kicker">{t("Graduate research")}</p><h3><a href={`${pageUrl('research')}#${vlm.id}`}>{t("CROP · Agricultural VLMs")} <span aria-hidden="true">↗</span></a></h3><p>{t(vlm.portfolio!.contribution)}</p></article>
+        <article id="selected-reasoning-verification"><p class="kicker">{t("Collaborative research")}</p><h3><a href={`${pageUrl('research')}#${reasoning.id}`}>{t("VeriTool · Reasoning & verification")} <span aria-hidden="true">↗</span></a></h3><p>{t(reasoning.portfolio!.contribution)}</p></article>
+        <article><p class="kicker">{t("Published research")}</p><h3><a href={`${pageUrl('research')}#${vision.id}`}>{t("Computer vision")} <span aria-hidden="true">↗</span></a></h3><p>{t(vision.contribution)}</p></article>
+      </div>
+    </div>
   </section>
-  <section class="portfolio-background" aria-labelledby="background-title">
-    <div><p class="kicker">{t("Background")}</p><h2 id="background-title">{t("Research meets practice.")}</h2></div>
-    <div><p>{t("I am an R&D Engineer Intern at PAPAGO! My previous roles at National Ilan University include computer vision research and AI development through industry–academia collaboration.")}</p>
-    <ul class="education-lines plain-list" role="list">{education.map(degree => <li><span>{t(degree.shortTitle)}</span><span>{dateLabel(degree.startLabel, locale)}–{dateLabel(degree.endLabel, locale)}</span></li>)}</ul>
-    <div class="editorial-actions"><a class="editorial-link" href={pageUrl('about')}>{t("More about me")} <span aria-hidden="true">↗</span></a><a class="editorial-link secondary" href={`${pageUrl('research')}#publications-title`}>{t("Selected publications")} <span aria-hidden="true">↗</span></a></div></div>
+
+  <div class="accomplishment-practice">
+    <section class="recognition-overview" aria-labelledby="recognition-overview-title">
+      <p class="kicker">{t("Selected team recognition")}</p><h2 id="recognition-overview-title">{t("Work recognized together.")}</h2>
+      <ul class="award-overview-list plain-list" role="list">{selectedRecognition.map(item => <li data-selected-recognition={item.id}><h3><a href={`${pageUrl('about')}#${item.id}`}>{t(item.title)} <span aria-hidden="true">↗</span></a></h3><p>{t(item.kind === 'paper-team' ? 'Awarded to the paper’s author team' : 'Team award')}{item.context && ` · ${t(item.context)}`}</p></li>)}</ul>
+      <a class="editorial-link secondary" href={`${pageUrl('about')}#recognition`}>{t("All recognition")} <span aria-hidden="true">↗</span></a>
+    </section>
+    <section class="engineering-overview" id="selected-retrieval-applications" aria-labelledby="engineering-overview-title">
+      <p class="kicker">{t("Engineering delivery")}</p><h2 id="engineering-overview-title">{t("Admissions QA, connected.")}</h2>
+      <p>{t(retrievalWork.portfolio!.contribution)}</p>
+      <p class="delivery-result">{t(delivery.deliverySummary!)}</p>
+      <a class="editorial-link" href={`${pageUrl('experience')}#${retrievalWork.id}`}>{t("Explore the engineering")} <span aria-hidden="true">↗</span></a>
+      <a class="delivery-context" href={`${pageUrl('experience')}#${delivery.id}`}>{t("Industry–academia role & delivery")} <span aria-hidden="true">↗</span></a>
+    </section>
+  </div>
+
+  <section class="credentials-overview" aria-labelledby="credentials-overview-title">
+    <div><h2 id="credentials-overview-title"><span data-credential-total={credentialCount}>{credentialCount}</span> {t("Professional & vendor credentials")}</h2><p>{t("AI, cloud, Python, and IoT; completed courses are listed separately.")}</p></div>
+    <a class="editorial-link secondary" href={`${pageUrl('about')}#credentials`}>{t("Credentials & learning")} <span aria-hidden="true">↗</span></a>
   </section>
   <section class="portfolio-contact" aria-labelledby="continue-title"><p class="kicker">{t("Get in touch")}</p><h2 id="continue-title">{t("A good question is a good start.")}</h2><p>{t("For research conversations and engineering opportunities.")}</p><a class="editorial-link" href={profiles.linkedin}>{t("Connect on LinkedIn")} <span aria-hidden="true">↗</span></a></section>
 </Layout>

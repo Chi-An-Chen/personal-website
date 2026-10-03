@@ -1,8 +1,8 @@
 /** Run with the installed playwright-cli: run-code --filename=scripts/qa-portfolio.js.
- * Production preview must be running at 127.0.0.1:4322. No test dependency enters the site.
+ * Open the production preview (or reviewed deployed site) before running. Default: 127.0.0.1:4322. No test dependency enters the site.
  */
 async (page) => {
-  const base = 'http://127.0.0.1:4322/personal-website/';
+  const base = page.url().startsWith('http') ? new URL('/personal-website/', page.url()).href : 'http://127.0.0.1:4322/personal-website/';
   const results = [], failures = [], errors = [], screenshots = [];
   const check = (name, pass, evidence) => { results.push({name, pass, evidence}); if (!pass) failures.push(name); };
   const goto = async path => { await page.goto(base + (path === '' || path === 'zh/' ? path + '#site-header' : path)); await page.evaluate(() => document.fonts.ready); };
@@ -26,7 +26,8 @@ async (page) => {
       check(`layout ${width} ${prefix+route || 'home'}`, state.overflow<=1 && state.h1===1 && state.current===1 && !state.opening && state.brokenImages===0 && state.lang===(prefix?'zh-Hant':'en'),state);
       if(!route) {
         check(`useful biography viewport ${width} ${prefix||'en'}`,state.title<844 && state.cta< (width===1280?800:844),state.cta);
-        for(const kind of ['vlm','reasoning','retrieval']) {
+      }
+      for(const kind of (route==='research/' ? ['vlm','reasoning'] : route==='experience/' ? ['retrieval'] : [])) {
           const demo=page.locator(`.work-demo--${kind}`);
           const heights=[];
           for(const value of ['0','1','2','0']) {
@@ -37,6 +38,7 @@ async (page) => {
           }
           check(`stable demo height ${width} ${prefix||'en'} ${kind}`,Math.max(...heights)-Math.min(...heights)<1,heights);
         }
+      if(!route) {
         await page.evaluate(()=>scrollTo(0,0));
         const file=`output/playwright/home-${prefix?'zh':'en'}-${width}.png`;
         await page.screenshot({path:file,fullPage:true});screenshots.push(file);
@@ -49,6 +51,7 @@ async (page) => {
   check('keyboard skip link first',await page.locator('.skip-link').evaluate(el=>el===document.activeElement));
   await page.keyboard.press('Enter');
   check('skip focuses main',await page.locator('#main').evaluate(el=>el===document.activeElement));
+  await goto('research/#agricultural-vlm');
   const first=page.locator('.work-demo--vlm input[value="0"]');
   await first.focus(); await page.keyboard.press('ArrowRight');
   const focus=await page.evaluate(()=>({checked:document.querySelector('.work-demo--vlm input:checked').value,focused:document.activeElement?.getAttribute('value'),outline:getComputedStyle(document.activeElement.nextElementSibling).outlineWidth}));
@@ -69,12 +72,18 @@ async (page) => {
   const reversed=await page.evaluate(()=>({selected:document.querySelector('.work-demo--vlm input:checked').value,label:Number(getComputedStyle(document.querySelector('.tag-label')).opacity),reason:Number(getComputedStyle(document.querySelector('.tag-reason')).opacity),running:document.querySelector('.work-demo--vlm').getAnimations({subtree:true}).length}));
   check('rapid repeated and reverse clicks settle',reversed.selected==='2' && reversed.label===1 && reversed.reason===0 && reversed.running===0,reversed);
   await page.locator('.work-demo--vlm input[value="1"]').check();
-  const inFlight=await page.locator('.work-demo--vlm').evaluate(el=>el.getAnimations({subtree:true}).length);
-  await page.locator('#selected-agricultural-vlm .editorial-link').click();
-  check('navigate during demo motion',inFlight>0 && page.url().endsWith('research/#agricultural-vlm'),{inFlight,url:page.url()});
+  const inFlight=await page.evaluate(()=>{
+    const active=document.querySelector('.work-demo--vlm').getAnimations({subtree:true}).length;
+    document.querySelector('.editorial-continue .editorial-link').click();
+    return active;
+  });
+  await page.waitForURL('**/experience/');
+  check('navigate during demo motion',inFlight>0 && page.url().endsWith('/experience/'),{inFlight,url:page.url()});
+  await goto('research/#agricultural-vlm');
   await page.evaluate(()=>document.fonts.ready); await page.waitForTimeout(250);
   const anchor=await page.evaluate(()=>({top:document.querySelector('#agricultural-vlm').getBoundingClientRect().top,index:document.querySelector('[data-section-index]').getBoundingClientRect().bottom}));
   check('research deep link not obscured',anchor.top>=anchor.index-2,anchor);
+  await goto(''); await goto('about/');
   await page.goBack({waitUntil:'commit'});
   check('history returns with opening hidden',await page.locator('.portfolio-hero').count()===1 && !(await page.locator('.prologue').isVisible()));
   await page.reload(); await page.evaluate(()=>document.fonts.ready);
@@ -96,7 +105,7 @@ async (page) => {
   await page.getByRole('link',{name:'Switch to English',exact:true}).click();
   check('switch to en',await page.locator('html').getAttribute('lang')==='en');
   // Reduced motion applies immediately to the artwork and shared runtime.
-  await page.emulateMedia({reducedMotion:'reduce'}); await goto('about/'); await goto('');
+  await page.emulateMedia({reducedMotion:'reduce'}); await goto('about/'); await goto('research/#agricultural-vlm');
   await page.locator('.work-demo--vlm input[value="1"]').check();
   const reduced=await page.evaluate(()=>({animations:document.getAnimations().length,duration:getComputedStyle(document.querySelector('.tag-reason')).transitionDuration,opacity:getComputedStyle(document.querySelector('.tag-reason')).opacity}));
   check('reduced motion is immediate',reduced.animations===0 && reduced.duration==='0s' && reduced.opacity==='1',reduced);
@@ -105,20 +114,30 @@ async (page) => {
     await page.setViewportSize({width:390,height:600});await goto(prefix);
     await page.evaluate(()=>document.documentElement.style.fontSize='200%');
     check(`200% text ${prefix||'en'}`,await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+    for(const route of ['research/','experience/']) {
+    await goto(prefix+route);await page.evaluate(()=>document.documentElement.style.fontSize='200%');
+    check(`200% detail text ${prefix+route}`,await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
     const artFit=await page.locator('.demo-art').evaluateAll(arts=>arts.map(art=>({height:art.clientHeight,scrollHeight:art.scrollHeight,width:art.clientWidth,scrollWidth:art.scrollWidth})));
-    check(`200% artwork fit ${prefix||'en'}`,artFit.every(a=>a.scrollHeight<=a.height+1 && a.scrollWidth<=a.width+1),artFit);
-    await page.screenshot({path:`output/playwright/text200-${prefix?'zh':'en'}.png`,fullPage:true});
+    check(`200% artwork fit ${prefix+route}`,artFit.every(a=>a.scrollHeight<=a.height+1 && a.scrollWidth<=a.width+1),artFit);
+    await page.screenshot({path:`output/playwright/text200-${prefix?'zh':'en'}-${route.replace('/','')}.png`,fullPage:true});
+  }
   }
   // Native interactions remain functional with JS disabled.
   const nojs=await page.context().browser().newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
   const np=await nojs.newPage();
   for(const prefix of ['', 'zh/']) {
-    await np.goto(base+prefix);
+    await np.goto(base+prefix+'experience/');
     await np.locator('.work-demo--retrieval input[value="2"]').check();
     check(`no-JS demo ${prefix||'en'}`,await np.locator('#retrieval-note-2').isVisible() && !(await np.locator('#retrieval-note-0').isVisible()));
-    await np.locator('#selected-agricultural-vlm .editorial-link').click();
-    await np.locator('.research-detail summary').press('Enter');
-    check(`no-JS details ${prefix||'en'}`,await np.locator('.research-detail').getAttribute('open')!==null);
+    await np.goto(base+prefix+'research/');
+    await np.locator('#agricultural-vlm > .research-detail summary').press('Enter');
+    check(`no-JS details ${prefix||'en'}`,await np.locator('#agricultural-vlm > .research-detail').getAttribute('open')!==null);
+    for(const kind of ['vlm','reasoning']) {
+      const demo=np.locator(`.work-demo--${kind}`);await demo.locator('input[value="2"]').check();
+      check(`no-JS research demo ${prefix||'en'} ${kind}`,await np.locator(`#${kind}-note-2`).isVisible());
+      const details=demo.locator('..').locator('details');await details.locator('summary').press('Enter');
+      check(`no-JS full method ${prefix||'en'} ${kind}`,await details.locator(`.concept--${kind}`).isVisible());
+    }
   }
   await nojs.close();
   check('no browser errors',errors.length===0,errors);

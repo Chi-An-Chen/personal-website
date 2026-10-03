@@ -78,3 +78,7 @@ Project Pages 的 `robots.txt` 位於專案子路徑；搜尋引擎通常從網�
 ## 公開邊界
 
 `reference_data/`、原始 PDF、`work/`、憑證、私密來源筆記、證書掃描與 QA 截圖不進 Git 或公開輸出。建置不需要它們或 GitHub 認證。`dist/`、`node_modules/`、`.astro/` 與瀏覽器暫存均忽略。`.gitignore` 不會移除已追蹤的內容，交付前仍須檢查 Git index 與產物。
+
+## 2026-10-03 第二輪成果概覽
+
+首頁改為精簡的研究成果、個人貢獻、代表團隊獎項、工程交付與認證摘要。計數來自共用 factual records，互動示意位於 Research／Experience，黑色開場維持原行為。範圍與實際驗證狀態見 [docs/accomplishment-review.md](docs/accomplishment-review.md)。
