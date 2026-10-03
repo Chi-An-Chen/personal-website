@@ -16,6 +16,17 @@ const expectedPages = [...routes.map(route => route ? `${route}/index.html` : 'i
 const fontFiles = ['SourceSerif4-Regular', 'SourceSans3-Regular', 'SourceSans3-Semibold'].map(name => `fonts/${name}.woff2`);
 const publicFiles = ['favicon.svg', 'social-preview.png', 'sitemap.xml', 'robots.txt'];
 const externalLinks = ['https://www.linkedin.com/in/chi-an-chen-993590315', 'https://github.com/Chi-An-Chen'];
+const publicationSource = await readFile('src/data/publications.ts','utf8');
+const publications = JSON.parse(publicationSource.match(/export const publications = (\[[^]*?\]) as const/)[1]);
+const ieeeAuthorProfile = publicationSource.match(/export const ieeeAuthorProfile = '([^']+)'/)[1];
+const officialPublications = {
+  'fahu-mamba':'https://ieeexplore.ieee.org/document/11326816/',
+  'ssiu-net':'https://ieeexplore.ieee.org/document/11326852/',
+  'lvit-cb':'https://ieeexplore.ieee.org/document/11130997/',
+};
+assert.equal(ieeeAuthorProfile,'https://ieeexplore.ieee.org/author/325765059341820');
+for(const paper of publications) assert.equal(paper.officialUrl,officialPublications[paper.id] ?? null,`Verified official link: ${paper.id}`);
+const allowedExternalLinks = [...externalLinks,ieeeAuthorProfile,...Object.values(officialPublications)];
 const forbiddenContent = /reference_data|\/Users\/|\/home\/|(?:^|[\s"'=])work\/|\.pdf(?:["?#<\s]|$)|Coming soon|Private Repo|repo ownership|\bvisibility\s*[:=]|-----BEGIN .*PRIVATE KEY-----|(?:api[_-]?key|access[_-]?token|client[_-]?secret)\s*[=:]|\b(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]+|AIza[A-Za-z0-9_-]{30,}|AKIA[A-Z0-9]{16})\b|https?:\/\/(?:localhost|127\.0\.0\.1|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[01])\.\d+\.\d+)|https?:\/\/[^\s"<>]+(?:run\.app|cloudfunctions\.net)|MidSchool_RAG|NIU_MS_VLM|UNews_commute|admissions_algorithm|Less-is-Verified|virginiakm1988|A\.LEAGUE_LLM/i;
 const decode = value => value.replaceAll('&amp;', '&').replaceAll('&#39;', "'").replaceAll('&quot;', '"').replaceAll('&lt;', '<').replaceAll('&gt;', '>');
 const escape = value => value.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
@@ -44,7 +55,7 @@ async function checkReference(raw, from, allowExternal = false) {
   const sourcePath = from === 'index.html' ? base : `${base}${from.replace(/index\.html$/, '')}`;
   const url = new URL(decode(raw), new URL(sourcePath, site));
   if (url.origin !== site.origin) {
-    assert(allowExternal && externalLinks.includes(url.href), `Unexpected external URL: ${from} / ${url.href}`);
+    assert(allowExternal && allowedExternalLinks.includes(url.href), `Unexpected external URL: ${from} / ${url.href}`);
     return;
   }
   assert(url.pathname.startsWith(base), `Missing project base: ${from} / ${url.pathname}`);
@@ -74,21 +85,21 @@ for (const [file,html] of htmlPages) {
   assert(title.length > 10 && description.length >= (isZh ? 30 : 70), `Missing/usefully short metadata: ${file}`);
   titles.add(title); descriptions.add(description);
   assert.equal((html.match(/<h1(?:\s|>)/g) || []).length,1,`One h1 required: ${file}`);
-  const hasOpening = file === 'index.html' || file === 'zh/index.html';
-  assert(html.includes(`<html lang="${locale}" data-design="editorial"${hasOpening ? ' data-opening' : ''}>`),`Language, design and Home opening: ${file}`);
+  assert(html.includes(`<html lang="${locale}" data-design="editorial"${route === '' ? ' data-opening' : ''}>`),`Language and design: ${file}`);
+  assert.equal(html.includes('class="prologue"'),route === '',`Home-only opening: ${file}`);
   const scripts = [...html.matchAll(/<script\b([^>]*)>([^]*?)<\/script>/gi)];
-  assert.equal(scripts.length,isPrimary ? 2 : 0,`Opening bootstrap and motion module on primary pages only: ${file}`);
+  assert.equal(scripts.length,isPrimary ? 2 : 0,`Opening check plus motion module on primary pages only: ${file}`);
   if(isPrimary) {
-    const [,bootstrapAttributes,bootstrap] = scripts[0];
-    assert.equal(bootstrapAttributes.trim(),'','Only the approved synchronous opening bootstrap may precede the motion module');
-    assert(html.indexOf(scripts[0][0]) < html.indexOf('</head>'),`Opening state must be set before body paint: ${file}`);
-    assert(bootstrap.includes('sessionStorage.getItem(key)') && bootstrap.includes('sessionStorage.setItem(key') && bootstrap.includes('dataset.openingSeen') && bootstrap.includes("'chi-an-chen-opening-seen'"),`Unexpected opening bootstrap: ${file}`);
+    const [,headAttributes,headSource] = scripts[0];
+    assert.equal(headAttributes.trim(),'','Small synchronous opening check');
+    assert(headSource.includes('chi-an-chen-opening-seen') && headSource.includes('visibilitychange') && headSource.includes("navigation?.type === 'reload'"),'Session entry check and visible-time marking');
+    assert(gzipSync(headSource+scripts[1][2]).length <= 4096,'Combined head check and runtime budget');
     const [,attributes,source] = scripts[1];
     assert.equal(attributes.trim(),'type="module"',`Only the inline Astro motion module is allowed: ${file}`);
     assert(source.includes('[data-reveal-group]') && source.includes('[data-fieldbook]'),`Unexpected module: ${file}`);
     assert(source.includes('[data-section-index]') && !source.includes('.theme-index'),`Stable section-index selector: ${file}`);
     assert(!/\b(?:fetch|XMLHttpRequest|WebSocket|sendBeacon|eval)\s*\(|\bimport\s*(?:\(|["'{*])/.test(source),`Unexpected network or imported runtime: ${file}`);
-    assert(gzipSync(bootstrap).length + gzipSync(source).length <= 4096,`Opening bootstrap and motion module exceed 4 KiB gzip: ${file}`);
+    assert(gzipSync(source).length <= 4096,`Motion module exceeds 4 KiB gzip: ${file}`);
     motionModules.add(source);
   }
   assert(!/\son\w+\s*=/i.test(html),`Unexpected inline event handler: ${file}`);
@@ -141,6 +152,7 @@ for (const [file,html] of htmlPages) {
     assert(html.includes('data-compatibility-target') && html.includes(`href="${base}${compatibility[route]}"`),`Compatibility fallback: ${file}`);
     assert(!/http-equiv="refresh"|HTTP 301/i.test(html),`Compatibility pages must remain readable: ${file}`);
   }
+  for(const [,raw] of html.matchAll(/url\(['"]([^'"]+)['"]\)/g)) await checkReference(raw,file);
   for(const [,attribute,raw] of html.matchAll(/\b(href|src)="([^"]*)"/g)) await checkReference(raw,file,attribute==='href');
   for(const [,value] of html.matchAll(/\bsrcset="([^"]+)"/g)) for(const candidate of value.split(',')) await checkReference(candidate.trim().split(/\s+/)[0],file);
 }
@@ -159,9 +171,25 @@ for(const file of files.filter(file=>/\.(css|svg|xml|txt)$/.test(file))) {
   }
 }
 const builtCss=[...(await Promise.all(files.filter(file=>file.endsWith('.css')).map(file=>readFile(resolve(root,file),'utf8')))), ...htmlPages.values()].join('\n');
-assert(builtCss.includes('@starting-style') && builtCss.includes('blur(6px)'), 'Home prologue line reveal ships in production CSS');
+assert(!builtCss.includes('@starting-style'), 'Background tabs must not consume CSS-only opening entrances');
+const motionSource = await readFile('src/scripts/motion.ts','utf8');
+assert(motionSource.includes("document.visibilityState !== 'visible'") && motionSource.includes("'visibilitychange'") && motionSource.includes('animation.pause()') && motionSource.includes('animation.play()'), 'Opening waits and pauses for actual visibility');
+assert(motionSource.includes('document.fonts.ready') && motionSource.includes('duration: 1100, delay: 300 + i * 500') && motionSource.includes("opacity: .48, transform: 'translateY(16px)'"), 'Approved finite readable opening sequence');
+assert.equal((motionSource.match(/\.animate\(/g)||[]).length,1,'Single scoped Web Animations call');
+assert(motionSource.includes('animation.cancel()') && motionSource.includes('openingAnimationDone'), 'Opening can settle without replay');
+assert(!/overflow-y:hidden|animation-timeline/.test(builtCss) && builtCss.includes('scrollbar-width:none'), 'Hidden Home scrollbar preserves native scrolling');
+assert(builtCss.includes('navigation:none') && builtCss.includes('::view-transition-group(*)'),'Reduced motion disables native navigation transitions');
+assert(builtCss.includes('prefers-reduced-motion:no-preference'), 'Animations opt in only without reduced motion');
 assert(builtCss.includes('@view-transition') && builtCss.includes('view-transition-name:nav-pill') && builtCss.includes('view-transition-name:none'), 'Navigation-only cross-document transition CSS');
 assert(builtCss.includes('view-transition-name:nav-labels') && builtCss.includes('view-transition-name:nav-current-label') && /::view-transition-group\(nav-labels\)\{[^}]*animation:none/.test(builtCss) && /::view-transition-group\(nav-current-label\)\{[^}]*animation:none/.test(builtCss), 'Static navigation text remains above the moving pill');
+assert(gzipSync(await readFile('src/styles/portfolio.css','utf8')).length <= 3072, 'Added Home CSS exceeds 3 KiB gzip');
+const homeStyles = (await Promise.all(['src/styles/portfolio.css','src/styles/motion.css'].map(file=>readFile(file,'utf8')))).join('\n');
+assert(gzipSync(homeStyles).length <= 4096, 'Home design and shared motion CSS exceed 4 KiB gzip');
+const motionCss = await readFile('src/styles/motion.css','utf8');
+assert(gzipSync(motionCss).length <= 3072, 'Shared motion CSS exceeds 3 KiB gzip');
+assert(!/addEventListener\(['"]scroll['"]/.test(motionSource) && motionSource.includes('controller.abort()') && motionSource.includes('opening.offsetHeight <= innerHeight + 1'), 'Only one bounded gesture, no continuous scroll work; oversized text stays native');
+assert(builtCss.includes('outline:2px solid #656565'),'Neutral visible keyboard focus');
+assert(builtCss.includes('#site-header[tabindex="-1"]:focus') && builtCss.includes('#main[tabindex="-1"]:focus'),'Anchor destinations avoid container outlines');
 const sitemap=await readFile(resolve(root,'sitemap.xml'),'utf8');
 assert.deepEqual([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]),localizedPrimary.map(route=>new URL(`${base}${route ? `${route}/` : ''}`,site).href),'Sitemap includes only primary canonical URLs');
 assert((await readFile(resolve(root,'robots.txt'),'utf8')).includes(`Sitemap: ${new URL(`${base}sitemap.xml`,site)}`),'Robots sitemap');
@@ -171,19 +199,22 @@ assert.equal(social.subarray(1,4).toString(),'PNG');assert.equal(social.readUInt
 assert(Object.values(zhCopy).every(value=>typeof value==='string'&&value.trim()),'Empty translation');
 for(const prefix of ['', 'zh/']) {
 const home=htmlPages.get(`${prefix}index.html`), research=htmlPages.get(`${prefix}research/index.html`), experience=htmlPages.get(`${prefix}experience/index.html`), about=htmlPages.get(`${prefix}about/index.html`);
-assert(home.includes('class="prologue-statement" lang="en"') && home.includes('From perception,') && home.includes('to reasoning,') && home.includes('to practice.'),'Shared English prologue');
-assert.equal((home.match(/class="feature-evidence"/g)||[]).length,3,'Three Home evidence lines');
-const evidence=[
- ['Fine-grained visual categorization','Bounded reasoning','Parameter-efficient fine-tuning with DoRA'],
- ['Matched-data ablation','Error injection','Accuracy–efficiency analysis'],
- ['Document retrieval','SQL lookup','API integration'],
-];
-for(const items of evidence) {
- const line=items.map(item=>prefix ? zhCopy[item] : item).join(' · ');
- assert(home.includes(`class="feature-evidence">${escape(line)}</p>`) || home.includes(`class="feature-evidence">${line}</p>`),`Home evidence: ${line}`);
+assert(home.indexOf('class="site-header') < home.indexOf('class="portfolio-hero"'),'Navigation precedes useful hero');
+assert(home.indexOf('class="prologue"') < home.indexOf('class="site-header'),'Statement precedes light biography');
+assert(!home.includes('home-header') && home.includes('content="#000000"'),'Black opening, light biography');
+assert(home.includes('<span>From perception,</span>') && home.includes('<span>to reasoning,</span>') && home.includes('<span>to practice.</span>'),'Original three English phrases');
+assert(home.includes('class="prologue-next" href="#site-header"'),'Native Scroll down fallback');
+assert(home.includes('href="#selected-title"') && home.includes('class="hero-work-index"'),'Hero has native work entry points');
+assert(!home.includes('class="feature-evidence"'),'Deep method lists belong in detail pages');
+assert.equal((home.match(/class="case-facts"/g)||[]).length,3,'Three concise problem/contribution/outcome summaries');
+assert.equal((home.match(/<fieldset class="demo-controls"/g)||[]).length,3,'Three independently labelled native demo controls');
+assert.equal((home.match(/type="radio"/g)||[]).length,9,'Nine native, keyboard-operable demo choices');
+assert.equal((home.match(/ checked(?:\s|>|=)/g)||[]).length,3,'One initial selection per demo');
+for(const kind of ['vlm','reasoning','retrieval']) {
+ assert.equal((home.match(new RegExp(`name="demo-${kind}"`,'g'))||[]).length,3,`Independent ${kind} radio group`);
+ for(let i=0;i<3;i++) assert(home.includes(`aria-describedby="${kind}-note-${i}"`) && home.includes(`id="${kind}-note-${i}"`),`Accessible ${kind} description ${i}`);
 }
-assert(home.indexOf('class="prologue"') < home.indexOf('class="site-header') && home.indexOf('class="site-header') < home.indexOf('class="editorial-hero"'),'Prologue precedes navigation and the existing hero');
-assert(home.includes('href="#site-header"') && home.includes(prefix ? '往下閱讀' : '>Scroll'),'Native localized prologue link');
+assert.equal((home.match(new RegExp(prefix ? '概念示意' : 'Conceptual illustration','g'))||[]).length,3,'Every illustration marked conceptual');
 assert(/<div\b[^>]*\sdata-fieldbook(?:\s|=|>)/.test(research) && !/<div\b[^>]*\sdata-fieldbook(?:\s|=|>)/.test(experience),'Research-only orientation');
 assert.equal((research.match(/<nav\b[^>]*\sdata-section-index(?:\s|=|>)/g)||[]).length,1,'Research tracked section index');
 assert(!/<nav\b[^>]*\sdata-section-index(?:\s|=|>)/.test(experience) && !/<nav\b[^>]*\sdata-section-index(?:\s|=|>)/.test(about),'Other section indexes remain static');
@@ -199,8 +230,13 @@ assert(!research.includes('As the primary researcher'),'Unwanted role preface');
 const publicationIds=['fahu-mamba','ssiu-net','transformer-mamba-unet','lvit-cb','lvit-cb-itaoi','virtual-try-on-itac'];
 assert.equal((research.match(/data-publication-id=/g)||[]).length,6);
 for(const [i,id] of publicationIds.entries()) assert(research.includes(`id="publication-${i+1}" data-publication-id="${id}"`),`Lost publication: ${id}`);
-const source=await readFile('src/data/publications.ts','utf8');
-const publications=JSON.parse(source.match(/export const publications = (\[[^]*?\]) as const/)[1]);
+assert(research.includes(`href="${ieeeAuthorProfile}"`),'IEEE author profile near publications');
+for(const paper of publications) {
+ const record=research.match(new RegExp(`data-publication-id="${paper.id}"[^]*?<\\/li>`))?.[0];
+ assert(record,`Publication record: ${paper.id}`);
+ assert.equal((record.match(/href="https:\/\/ieeexplore\.ieee\.org\/document\//g)||[]).length,paper.officialUrl ? 1 : 0,`Only verified paper links: ${paper.id}`);
+ if(paper.officialUrl) assert(record.includes(`href="${paper.officialUrl}"`) && record.includes(escape(`${prefix ? zhCopy['View on IEEE Xplore'] : 'View on IEEE Xplore'}: ${paper.title}`)),`Accessible official link: ${paper.id}`);
+}
 for(const paper of publications) for(const key of ['title','authors','venue','year','description']) {
   const value=prefix && key==='description' ? zhCopy[paper[key]] : paper[key];
   assert(value && (research.includes(escape(value)) || research.includes(value)),`Missing publication ${paper.id} ${key}`);
@@ -227,7 +263,7 @@ const originalPapers=await readRecords('src/data/publications.ts');
 const learning=await readRecords('src/data/learning.ts');
 const originalEnglish=new Set([
   'Chi-An Chen','EN','LinkedIn','GitHub','Getting Started with AI on Jetson Nano',
-  'From perception,','to reasoning,','to practice.',
+  '(a + b) × c', 'From perception,', 'to reasoning,', 'to practice.',
   'Best Creative Award · AVSS 2025','Best Conference Papers · IS3C 2025',
   ...originalPapers.flatMap(p=>[p.title,p.authors,p.venue]),
   ...learning.flatMap(item=>[item.name,item.issuer]),

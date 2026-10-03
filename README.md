@@ -1,10 +1,10 @@
 # Chi-An Chen — Personal Website
 
-人物為中心的 AI research & engineering 網站，使用 Astro、TypeScript、semantic HTML 與 CSS。延續核准的 Research in Practice 方向，四個主要頁面為 Home、Research、Experience、About。
+人物為中心的 AI research & engineering 網站，使用 Astro、TypeScript、semantic HTML 與 CSS。採用 2026-10-03 核准的互動研究作品集方向，四個主要頁面為 Home、Research、Experience、About。
 
 預期正式網址：**https://chi-an-chen.github.io/personal-website/**
 
-網站以 GitHub Actions 部署；雙語功能與維護方式見 [雙語驗收紀錄](docs/i18n-review.md)。原版驗收範圍與限制見 [部署準備紀錄](docs/deployment-readiness.md)；Phase 1 的歷史紀錄保留於 [phase1-review.md](docs/phase1-review.md)。
+網站以 GitHub Actions 部署；雙語功能與維護方式見 [雙語驗收紀錄](docs/i18n-review.md)。本輪設計與本機 QA 見 [portfolio-review.md](docs/portfolio-review.md)。原版驗收範圍與限制見 [部署準備紀錄](docs/deployment-readiness.md)；Phase 1 的歷史紀錄保留於 [phase1-review.md](docs/phase1-review.md)。
 
 ## 開發與建置
 
@@ -65,7 +65,7 @@ Project Pages 的 `robots.txt` 位於專案子路徑；搜尋引擎通常從網�
 - `src/i18n/zh.json`：繁中翻譯，以英文原文作為鍵；英文改字需同步更新，缺漏會阻擋建置。正式書目與課程名稱不翻譯。
 - `src/components/pages/`：四個共用頁面元件；`src/pages/` 與 `src/pages/zh/` 只指定 locale。`pageUrl(id, locale)` 維持語言，`assetUrl()` 共用資產。
 
-四個主頁共用輕量且經驗收的 motion runtime；沒有 JavaScript 時內容仍可閱讀。Home 的黑色開場只在同一分頁首次進站時顯示；站內返回首頁與重新整理會直接進入人物介紹。選定的標題與圖解可短暫進場，Research 的區段索引可追蹤閱讀位置。主導覽的 active pill 以 CSS 漸進增強跨頁移動效果，正文頁面維持一般連結切換。字體位於 `public/fonts/`，授權位於 `docs/font-licenses/`。原始真人照片保留於 `src/assets/`。
+四個主頁共用輕量且經驗收的 motion runtime；沒有 JavaScript 時內容仍可閱讀。Home 保留黑色三行宣言與 Scroll down，再進入淺色人物介紹、研究重點與作品入口；三組概念圖以原生 radio 控制及 CSS 轉場呈現，可用鍵盤操作且不需要 JavaScript。開場在分頁可見且字體就緒後以約 2.4 秒分句入場；背景暫停、切回接續，導覽與捲動不需等待。可選的 sessionStorage 用於同分頁回訪略過，失敗時保留原生錨點。選定的標題與圖解可短暫進場，Research 的區段索引可追蹤閱讀位置。主導覽的 active pill 以 CSS 漸進增強跨頁移動效果，正文頁面維持一般連結切換。字體位於 `public/fonts/`，授權位於 `docs/font-licenses/`。原始真人照片保留於 `src/assets/`。
 
 修改後執行 check、build、輸出檢查並在瀏覽器驗收；新增公開資產或外部連結時同步審查 `scripts/check-build.mjs` 的明確允許範圍。QA 工具只安裝於本機暫存區，網站沒有新增執行階段依賴。
 

@@ -1,6 +1,6 @@
 export interface Publication {
   id: string; title: string; authors: string; venue: string; year: string;
-  description: string; award: boolean; lang: 'en' | 'zh-Hant';
+  description: string; award: boolean; lang: 'en' | 'zh-Hant'; officialUrl: string | null;
 }
 export interface Role {
   id: string; title: string; organization: string; location?: string;
@@ -18,6 +18,7 @@ export interface LearningItem {
 }
 export type ConceptKind = 'vlm' | 'reasoning' | 'retrieval';
 export interface EngineeringWork {
+  portfolio?: PortfolioPreview;
   id: string; title: string; summary: string; contribution: string;
   problem: string; integration: string; methods: string[]; homeEvidence?: string[];
   visual?: ConceptKind; kind: 'applied-project' | 'exploration';
@@ -29,3 +30,5 @@ export function assertHomeEvidence(entries: readonly { id: string; methods: stri
     }
   }
 }
+
+export interface PortfolioPreview { title: string; problem: string; contribution: string; result: string; }

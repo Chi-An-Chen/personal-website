@@ -1,5 +1,7 @@
 # Motion & Interaction Identity Pass
 
+> 歷史驗收紀錄。2026-10-03 新版首頁、互動與本機 QA 以 [portfolio-review.md](portfolio-review.md) 為準。
+
 2026-09-15。延續 `d01f35b` 的雙語 editorial 網站。本輪只增加開場、閱讀節奏與方法圖檢視；內容資料、主要構圖、路由、書目與角色 anchors 保留。本文記錄本機驗收；線上部署狀態以 GitHub Actions 為準。
 
 ## 實作與設計決定

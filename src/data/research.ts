@@ -1,8 +1,9 @@
 import { publications } from './publications';
 export type PublicationId = (typeof publications)[number]['id'];
-import { assertHomeEvidence, type ConceptKind } from './types';
+import { assertHomeEvidence, type ConceptKind, type PortfolioPreview } from './types';
 export type { ConceptKind } from './types';
 export interface ResearchTheme {
+  portfolio?: PortfolioPreview;
   id: string; title: string; shortTitle: string; summary: string;
   question: string; contribution: string; preview?: string; approach?: string[]; methods: string[]; homeEvidence?: string[];
   kind: 'research' | 'collaborative-research'; visual?: ConceptKind;
@@ -10,6 +11,7 @@ export interface ResearchTheme {
 }
 export const researchThemes: ResearchTheme[] = [
   {
+    portfolio: { title: 'CROP: seeing before reasoning', problem: 'Small vision-language models must distinguish subtle crop symptoms without getting lost in long reasoning.', contribution: 'I design visual supervision, adapt models, and evaluate fine-grained plant recognition.', result: 'CROP combines three supervision signals, with label-only or short-rationale inference.' },
     id: 'agricultural-vlm', title: 'Vision-language models for agricultural understanding',
     shortTitle: 'Agricultural VLMs', kind: 'research', visual: 'vlm', publicationIds: [],
     summary: 'Studying how much reasoning small vision-language models need for fine-grained agricultural recognition.',
@@ -24,6 +26,7 @@ export const researchThemes: ResearchTheme[] = [
     homeEvidence: ['Fine-grained visual categorization', 'Bounded reasoning', 'Parameter-efficient fine-tuning with DoRA'],
   },
   {
+    portfolio: { title: 'When is verification worth it?', problem: 'Structured reasoning adds tokens. Does checking an answer justify the extra cost?', contribution: 'In collaborative research, I build training data and evaluation workflows for VeriTool.', result: 'Controlled comparisons separate accuracy, format adherence, and error recovery; verification benefits depend on the setting.' },
     id: 'reasoning-verification', title: 'Reasoning and verification in small language models',
     shortTitle: 'Reasoning & verification', kind: 'collaborative-research', visual: 'reasoning', publicationIds: [],
     summary: 'Examining the cost of structured reasoning and the conditional value of verification in compact language models.',

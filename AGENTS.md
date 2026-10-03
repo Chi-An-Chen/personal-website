@@ -39,8 +39,7 @@ is a secondary profile link, not the hero's organizing principle.
 
 Position the person as AI research & engineering, with agricultural VLM first,
 collaborative reasoning and verification second, and CV / engineering extensions.
-Speech research is excluded. Preserve the approved Phase 1 Home and Research
-unless integration or accessibility reveals a concrete defect. Website copy is maintained in English and Traditional Chinese; design explanations
+Speech research is excluded. The 2026-10-03 approved portfolio pass supersedes the Phase 1 visual freeze. The user subsequently restored the separate black Scroll down opening; the personal introduction stays light. Preserve factual records and stable anchors; current design and QA are recorded in docs/portfolio-review.md. Website copy is maintained in English and Traditional Chinese; design explanations
 use Traditional Chinese. English remains the default at existing URLs; the four
 Chinese pages live under /zh/. Use shared page components and build-time translations,
 with no client language detection or runtime translation service. Missing Chinese
@@ -126,26 +125,25 @@ Content itself should often become the layout.
 
 Motion must be restrained and content-driven.
 
-The approved Motion & Interaction Identity Pass adds a normal-flow Home prologue
-with the English statement “From perception, to reasoning, to practice.” in both
-locales. The pure-black opening fills the first viewport, followed in document
-order by the navigation and existing person hero with its single h1. Hide the
-Home scrollbar with CSS while preserving native scrolling and keyboard access.
-The Home prologue may use one finite initial line-by-line reveal. Its three
-existing lines may reveal through opacity, blur, and short upward motion over
-approximately one second. The animation must never block scrolling or
-navigation. Reduced-motion and unsupported browsers show the final text
-immediately. Show the prologue only on the first primary-page entry in a tab
-session. Later Home visits, reloads, and history returns begin at the header
-and biography. Internal Home links use `#site-header` as a native fallback;
-the small synchronous head check may use sessionStorage before body paint.
-Compatibility pages and 404 remain script-free. The statement waits for input. The first downward
-wheel/swipe or keyboard gesture may smoothly advance to the header once; the
-Scroll link remains a native anchor. Do not auto-enter on a timer or lock scrolling.
-Respect reduced motion and allow oversized opening text to scroll normally.
-After the opening has left the viewport, remove it from the scrolling document
-without shifting the visible content. Scrolling back to the top must stop at
-the header and biography; it must not bring the opening back.
+The 2026-10-03 clarification preserves the original, normal-flow black Home
+opening: “From perception, to reasoning, to practice.” and a native Scroll down
+link. The personal introduction below stays light and concise. Never turn the
+biography into a black hero or remove the separate opening without a new request.
+Opening phrases may use a finite 2.4-second visible-time entrance: 1100ms duration,
+300/800/1300ms delays, 16px rise, and readable opacity .48 to 1. Start after fonts
+are ready and the tab is visible; pause in hidden tabs, resume without restarting,
+and settle on focus, anchors, navigation, reduced motion and print. No CSS-only
+starting-style entrance may consume this sequence in a background tab. No-JS and
+unsupported browsers show the final statement immediately. Never block navigation
+or auto-enter on a timer. Keep the original single downward gesture enhancement,
+oversized-text fallback, native scrolling, optional per-tab first-entry check,
+revisit/reload/history skip, and removal of the offscreen spent opening without
+shifting visible content. Internal Home links retain #site-header.
+
+Three native radio-controlled concept illustrations explain selected work through
+interruptible CSS transitions. They must work with keyboard, touch, reduced motion
+and no JavaScript. Label them as conceptual; never imply measured model outputs
+or unpublished performance.
 
 Primary pages may opt selected heading clusters and concept figures into the
 shared `MotionRuntime.astro` / `src/scripts/motion.ts` enhancement. HTML and base
@@ -163,9 +161,9 @@ Research alone enhances its existing native theme index with desktop sticky
 orientation, contained by the three themes. Mobile, short viewports, and no-JS
 use the normal-flow index. Preserve native links, focus and details/summary.
 No animation dependencies, continuous scroll handlers, or permanent will-change.
-Keep the combined opening check and shared runtime below 4 KiB gzip and added CSS below 3 KiB gzip; validate
+Keep the combined head check and shared runtime below 4 KiB gzip, shared motion CSS and added Home CSS each below 3 KiB gzip, and their combined source below 4 KiB gzip; validate
 the exact runtime/keyframes in the build check. Compatibility pages and 404 stay
-script-free. See `docs/motion-identity-review.md` for the implementation and QA.
+script-free. See `docs/portfolio-review.md` for current implementation and QA; `docs/motion-identity-review.md` is historical.
 
 ## Technical Direction
 
@@ -245,7 +243,7 @@ Do not delete local references as part of this policy or publish them elsewhere.
 
 ## Workflow
 
-Continue from the approved implementation. Do not restart visual direction.
+Continue from the approved 2026-10-03 portfolio direction. Earlier aesthetic decisions are historical; preserve factual and technical constraints.
 
 For any future substantial visual changes:
 

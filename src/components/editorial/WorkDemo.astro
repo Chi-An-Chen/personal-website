@@ -1,0 +1,49 @@
+---
+import { translator, type Locale } from '../../i18n';
+import type { ConceptKind } from '../../data/types';
+interface Props { kind: ConceptKind; locale: Locale; }
+const { kind, locale } = Astro.props;
+const t = translator(locale);
+const choices = kind === 'vlm' ? ['Observe', 'Reason', 'Label'] : kind === 'reasoning' ? ['Compact CoT', 'Arithmetic', 'Verification'] : ['Documents', 'Records', 'Compose'];
+const descriptions = kind === 'vlm' ? [
+  'Visual descriptions capture observable symptoms without naming a diagnosis.',
+  'Bounded rationales connect visible symptoms to a class label.',
+  'Direct labels are a complementary training target. Inference can remain concise.',
+] : kind === 'reasoning' ? [
+  'A compact chain of thought provides the reference output format.',
+  'Arithmetic markup makes the calculation structure explicit.',
+  'An added verification segment is tested for its costs and conditional benefits.',
+] : [
+  'Retrieve passages from domain-specific documents.',
+  'Look up relevant structured records with SQL.',
+  'Bring retrieved evidence and the question together for a contextual response.',
+];
+---
+<figure class:list={['work-demo', `work-demo--${kind}`]}>
+  <div class="demo-heading"><span>{t("Conceptual illustration")}</span><span aria-hidden="true">{kind === 'vlm' ? '01' : kind === 'reasoning' ? '02' : '03'}</span></div>
+  <fieldset class="demo-controls"><legend class="sr-only">{t(kind === 'vlm' ? 'Explore supervision signals' : kind === 'reasoning' ? 'Compare output formats' : 'Explore information sources')}</legend>
+    {choices.map((choice,i) => <label><input type="radio" name={`demo-${kind}`} value={i} checked={i===0} aria-describedby={`${kind}-note-${i}`} /><span>{t(choice)}</span></label>)}
+  </fieldset>
+  <div class="demo-art" aria-hidden="true">
+    {kind === 'vlm' ? <>
+      <svg class="leaf-drawing" viewBox="0 0 440 270" fill="none"><path class="leaf-shape" d="M109 219C49 129 138 45 322 31C339 156 270 257 109 219Z"/><path d="M88 244 292 57M135 201 123 136M168 172 164 98M204 139 207 72M241 106 241 55M142 195 218 214M177 166 268 173M212 135 297 127" stroke="currentColor" stroke-width="2"/>
+      <g class="leaf-spots"><ellipse cx="180" cy="122" rx="17" ry="11" transform="rotate(-35 180 122)"/><ellipse cx="259" cy="153" rx="13" ry="9"/><ellipse cx="216" cy="190" rx="9" ry="7"/></g>
+      <g class="visual-brackets" stroke="currentColor" stroke-width="2"><path d="M144 97v-12h20M207 97V85h-20M144 146v12h20M207 146v12h-20"/><path d="M237 139v-12h14M281 139v-12h-14M237 163v12h14M281 163v12h-14"/></g>
+      <path class="reason-path" d="M277 151h91v62" stroke="currentColor" stroke-width="2" stroke-dasharray="4 5"/>
+      </svg><div class="art-tag tag-observe">{t("Visual evidence")}</div><div class="art-tag tag-reason">{t("Short rationale")}</div><div class="art-tag tag-label">{t("Class label")}</div>
+    </> : kind === 'reasoning' ? <div class="schema-drawing">
+      <div class="schema-input">{t("Same problem")}</div><div class="schema-rail"></div>
+      <div class="schema-row schema-row--0"><span>{t("Reason")}</span><i></i><i></i><b>{t("Answer")}</b></div>
+      <div class="schema-row schema-row--1"><span>{t("Calculate")}</span><code>(a + b) × c</code><b>{t("Answer")}</b></div>
+      <div class="schema-row schema-row--2"><span>{t("Check")}</span><code>(a + b) × c</code><b>{t("Verify")}</b></div>
+      <div class="schema-caption">{t("Compare accuracy, format, and cost")}</div>
+    </div> : <div class="retrieval-drawing">
+      <div class="source-paper source-paper--doc"><span>{t("Documents")}</span><i></i><i></i><i></i></div>
+      <div class="source-paper source-paper--data"><span>{t("Records")}</span><div class="mini-table">{Array.from({length:9},()=> <i></i>)}</div></div>
+      <svg viewBox="0 0 440 100" fill="none" class="source-paths"><path d="M105 5v34q0 16 16 16h83q16 0 16 16v24M335 5v34q0 16-16 16h-83q-16 0-16 16v24" stroke="currentColor" stroke-width="2"/><circle class="evidence-dot" cx="220" cy="86" r="5" fill="currentColor"/></svg>
+      <div class="answer-paper"><span>{t("Question + evidence")}</span><strong>{t("Contextual answer")}</strong></div>
+    </div>}
+  </div>
+  <div class="demo-notes">{descriptions.map(description => <p class="demo-measure" aria-hidden="true">{t(description)}</p>)}{descriptions.map((description,i) => <p id={`${kind}-note-${i}`} class={`demo-note demo-note--${i}`}>{t(description)}</p>)}</div>
+  <figcaption>{t(kind === 'vlm' ? 'Three complementary training targets, not a required inference sequence.' : kind === 'reasoning' ? 'Study design, not measured performance or a live model.' : 'A simplified information flow, not a live application.')}</figcaption>
+</figure>

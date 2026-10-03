@@ -4,6 +4,53 @@ const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const seen = new WeakSet<Element>();
 let entrances: IntersectionObserver | undefined;
 
+/** Visible-time phrase entrance. Base HTML never waits in a hidden state. */
+const opening = document.querySelector<HTMLElement>('.prologue');
+const openingAnimations: Animation[] = [];
+let openingAnimationDone = false;
+let openingReady = false;
+let openingFrame = 0;
+function settleOpeningAnimation() {
+  openingAnimationDone = true;
+  cancelAnimationFrame(openingFrame);
+  openingAnimations.forEach(animation => animation.cancel());
+  document.removeEventListener('visibilitychange', syncOpeningVisibility);
+}
+function syncOpeningVisibility() {
+  cancelAnimationFrame(openingFrame);
+  if (openingAnimationDone || !openingReady) return;
+  if (document.visibilityState !== 'visible') {
+    openingAnimations.forEach(animation => { if (animation.playState !== 'finished') animation.pause(); });
+    return;
+  }
+  // Let the now-visible, font-ready document paint before starting or resuming.
+  openingFrame = requestAnimationFrame(() => {
+    openingFrame = requestAnimationFrame(() => {
+      if (openingAnimationDone || document.visibilityState !== 'visible') return;
+      if (openingAnimations.length) {
+        openingAnimations.forEach(animation => { if (animation.playState === 'paused') animation.play(); });
+        return;
+      }
+      if (!opening || opening.hidden || scrollY > 0 || reducedMotion.matches) { settleOpeningAnimation(); return; }
+      try {
+        opening.querySelectorAll<HTMLElement>('.prologue-statement > span').forEach((line, i) => {
+          openingAnimations.push(line.animate([
+            { opacity: .48, transform: 'translateY(16px)' },
+            { opacity: 1, transform: 'translateY(0)' },
+          ], { duration: 1100, delay: 300 + i * 500, easing: 'cubic-bezier(.22,.75,.25,1)', fill: 'backwards' }));
+        });
+        Promise.all(openingAnimations.map(animation => animation.finished)).then(settleOpeningAnimation, settleOpeningAnimation);
+      } catch { settleOpeningAnimation(); }
+    });
+  });
+}
+function initOpeningAnimation() {
+  if (!opening || document.documentElement.hasAttribute('data-opening-seen') || reducedMotion.matches || !('animate' in Element.prototype)) return;
+  document.addEventListener('visibilitychange', syncOpeningVisibility);
+  document.fonts.ready.then(() => { openingReady = true; syncOpeningVisibility(); });
+}
+
+
 function settle(group: HTMLElement) {
   seen.add(group);
   entrances?.unobserve(group);
@@ -11,6 +58,7 @@ function settle(group: HTMLElement) {
 }
 
 function settleAll() {
+  settleOpeningAnimation();
   entrances?.disconnect();
   groups.forEach(settle);
 }
@@ -48,6 +96,7 @@ function initEntrances() {
 }
 
 document.addEventListener('focusin', event => {
+  settleOpeningAnimation();
   if (!(event.target instanceof Element)) return;
   const group = event.target.closest<HTMLElement>('[data-reveal-group]');
   if (group) settle(group);
@@ -58,6 +107,7 @@ document.addEventListener('click', event => {
   if (!(event.target instanceof Element)) return;
   const anchor = event.target.closest<HTMLAnchorElement>('a[href]');
   if (!anchor) return;
+  settleOpeningAnimation();
   const url = new URL(anchor.href);
   if (url.origin === location.origin && url.pathname === location.pathname && url.hash) settleAll();
 });
@@ -67,10 +117,10 @@ window.addEventListener('pageshow', event => {
 });
 window.addEventListener('beforeprint', settleAll);
 reducedMotion.addEventListener('change', event => { if (event.matches) settleAll(); });
+initOpeningAnimation();
 initEntrances();
 
 /** A first deliberate gesture completes the Home opening; ordinary scrolling resumes. */
-const opening = document.querySelector<HTMLElement>('.prologue');
 const entry = document.getElementById('site-header');
 const openingSkipped = document.documentElement.hasAttribute('data-opening-seen');
 if (opening && entry && !openingSkipped) {
@@ -81,6 +131,7 @@ if (opening && entry && !openingSkipped) {
     // Cancel any remaining smooth scroll before removing its original destination offset.
     window.scrollTo({ top: scrollY, behavior: 'instant' });
     if (opening.contains(document.activeElement)) entry.focus({ preventScroll: true });
+    settleOpeningAnimation();
     opening.hidden = true;
     window.scrollTo({ top: nextScrollY, behavior: 'instant' });
     // A deep link may still be travelling beyond the opening when it crosses this boundary.

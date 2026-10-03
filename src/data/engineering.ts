@@ -1,5 +1,6 @@
 import { assertHomeEvidence, type EngineeringWork } from './types';
 export const retrievalWork: EngineeringWork = {
+  portfolio: { title: 'From scattered data to useful answers', problem: 'Admissions questions span documents, school records, and contextual rules.', contribution: 'I connect document retrieval, SQL lookup, and application APIs.', result: 'Domain-specific question-answering workflows bring relevant sources into a shared context.' },
   id: 'retrieval-applications', title: 'From information retrieval to AI applications', kind: 'applied-project', visual: 'retrieval',
   summary: 'Connecting documents, structured queries, and contextual information in admissions-counseling applications.',
   contribution: 'My applied work brings document retrieval and SQL-based information lookup into domain-specific question-answering workflows. It includes preparing school and admissions information and connecting those components to application interfaces.',

@@ -11,14 +11,15 @@ interface Props {
 const { title, description, currentPage, canonicalPath, noindex = false, locale = 'en', languageTarget, languageAnchor = '' } = Astro.props;
 const t = translator(locale);
 const canonical = new URL(canonicalPath ?? pageUrl(currentPage ?? 'home', locale), Astro.site!);
+const fontFaces = [['Source Serif 4','SourceSerif4-Regular',400],['Source Sans 3','SourceSans3-Regular',400],['Source Sans 3','SourceSans3-Semibold',600]].map(([family,file,weight]) => `@font-face{font-family:'${family}';src:url('${assetUrl(`fonts/${file}.woff2`)}') format('woff2');font-weight:${weight};font-style:normal;font-display:swap}`).join('');
 const socialImage = new URL(assetUrl('social-preview.png'), Astro.site!);
 const targetPage = languageTarget ?? currentPage ?? 'home';
 const homeEntryUrl = `${pageUrl('home', locale)}#site-header`;
 const navigationUrl = (id: PageId) => id === 'home' ? homeEntryUrl : pageUrl(id, locale);
 const languageUrl = (next: Locale) => `${pageUrl(targetPage, next)}${languageAnchor ? `#${languageAnchor}` : targetPage === 'home' ? '#site-header' : ''}`;
 const displayName = locale === 'en' ? 'Chi-An Chen' : '陳麒安';
-const homeLabel = locale === 'en' ? 'Chi-An Chen — Home' : '陳麒安 Chi-An Chen — 首頁';
 const hasOpening = Astro.slots.has('opening');
+const homeLabel = locale === 'en' ? 'Chi-An Chen — Home' : '陳麒安 Chi-An Chen — 首頁';
 ---
 <!doctype html>
 <html lang={locale} data-design="editorial" data-opening={hasOpening ? '' : undefined}>
@@ -28,17 +29,22 @@ const hasOpening = Astro.slots.has('opening');
       (() => {
         const key = 'chi-an-chen-opening-seen';
         let seen = false;
-        try { seen = sessionStorage.getItem(key) === '1'; } catch { /* Native anchors remain the fallback. */ }
+        try { seen = sessionStorage.getItem(key) === '1'; } catch { /* Native anchors remain usable. */ }
         const navigation = performance.getEntriesByType('navigation')[0];
-        if (seen || location.hash || navigation?.type === 'reload' || navigation?.type === 'back_forward') {
-          document.documentElement.dataset.openingSeen = '';
-        }
-        try { sessionStorage.setItem(key, '1'); } catch { /* Storage is optional. */ }
+        if (seen || location.hash || navigation?.type === 'reload' || navigation?.type === 'back_forward') document.documentElement.dataset.openingSeen = '';
+        const markVisible = () => {
+          if (document.visibilityState !== 'visible') return;
+          try { sessionStorage.setItem(key, '1'); } catch { /* Storage is optional. */ }
+          document.removeEventListener('visibilitychange', markVisible);
+        };
+        if (document.visibilityState === 'visible') markVisible();
+        else document.addEventListener('visibilitychange', markVisible);
       })();
     </script>}
+    <style is:inline set:html={fontFaces}></style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content={hasOpening ? '#000000' : '#f7f5f0'} />
+    <meta name="theme-color" content={hasOpening ? '#000000' : '#f5f4ef'} />
     <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow'} />
     <link rel="canonical" href={canonical} />
     {!noindex && currentPage && <>
@@ -69,7 +75,7 @@ const hasOpening = Astro.slots.has('opening');
   <body>
     <a class="skip-link" href="#main">{t('Skip to content')}</a>
     <slot name="opening" />
-    <header class="site-header container" id="site-header" tabindex={hasOpening ? '-1' : undefined}>
+    <header class="site-header container" id="site-header" tabindex="-1">
       <a class="wordmark" href={homeEntryUrl} aria-label={homeLabel}>{displayName}<span aria-hidden="true">.</span>{locale === 'zh-Hant' && <small lang="en">Chi-An Chen</small>}</a>
       <nav class="desktop-navigation" aria-label={t('Main navigation')}><ul class="nav-list plain-list" role="list">
         {pages.map(page => <li><a href={navigationUrl(page.id)} aria-current={currentPage === page.id ? 'page' : undefined}>{currentPage === page.id && <span class="nav-active-pill" aria-hidden="true"></span>}<span class="nav-label">{t(page.label)}</span></a></li>)}

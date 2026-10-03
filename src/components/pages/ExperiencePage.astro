@@ -31,7 +31,7 @@ const pageUrl = (id: Parameters<typeof basePageUrl>[0]) => basePageUrl(id, local
   <section id="engineering-work" aria-labelledby="work-title">
     <div class="section-top" data-reveal-group><h2 data-reveal id="work-title">{t("Selected engineering work")}</h2><p>{t("Problems, contributions & integration.")}</p></div>
     {engineeringWork.map((work,i) => <article class:list={['engineering-case', i===0 && 'engineering-case--lead']} id={work.id} data-engineering-id={work.id}>
-      <div class="case-heading" data-reveal-group><p class="kicker" data-reveal>0{i+1} / {t(i===0 ? 'Retrieval & document applications' : i===1 ? 'Predictive modeling & NLP' : i===2 ? 'Data engineering' : 'Perception & inference')}</p><h3 data-reveal="second">{t(work.title)}</h3><p class="case-summary" data-reveal="third">{t(work.summary)}</p></div>
+      <div class="case-heading" data-reveal-group><p class="kicker" data-reveal>0{i+1} / {t(i===0 ? 'Retrieval & document applications' : i===1 ? 'Predictive modeling & NLP' : i===2 ? 'Data engineering' : 'Perception & inference')}</p><h3 data-reveal="second">{t(work.title)}</h3><p class="case-summary">{t(work.summary)}</p></div>
       <dl class="case-narrative"><div><dt>{t("Problem")}</dt><dd>{t(work.problem)}</dd></div><div><dt>{t("My work")}</dt><dd>{t(work.contribution)}</dd></div><div><dt>{t("Integration")}</dt><dd>{t(work.integration)}</dd></div></dl>
       {work.visual && <ConceptFigure locale={locale} kind={work.visual} />}
       <p class="case-methods"><span>{t("Methods in context")}</span>{work.methods.map(t).join(' · ')}</p>

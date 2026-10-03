@@ -29,19 +29,6 @@ html[data-design='editorial'] .prologue-statement[lang='en'] {
   letter-spacing: -.04em;
 }
 .prologue-statement span { display: block; }
-@media (prefers-reduced-motion: no-preference) {
-  .prologue-statement > span {
-    opacity: 1;
-    filter: blur(0);
-    transform: translateY(0);
-    transition: opacity 420ms var(--motion-ease), filter 520ms var(--motion-ease), transform 680ms var(--motion-ease);
-  }
-  .prologue-statement > span:nth-child(2) { transition-delay: 160ms; }
-  .prologue-statement > span:nth-child(3) { transition-delay: 320ms; }
-  @starting-style {
-    .prologue-statement > span { opacity: 0; filter: blur(6px); transform: translateY(22%); }
-  }
-}
 .prologue-next { justify-self: end; display:inline-flex; align-items:center; min-height:44px; margin-top:48px; }
 .prologue-next, .prologue-next:hover { color: var(--paper); }
 .prologue-next:focus-visible { outline-color: var(--paper); }
@@ -64,6 +51,7 @@ html[data-design='editorial'] .prologue-statement[lang='en'] {
   [data-reveal='third'] { --reveal-order: 2; }
 }
 @view-transition { navigation: auto; }
+::view-transition { pointer-events: none; }
 :root { view-transition-name: none; }
 @media (prefers-reduced-motion: no-preference) {
   /* Document transitions use a top layer. Static label snapshots keep navigation readable above the moving pill. */
@@ -89,6 +77,8 @@ html[data-design='editorial'] .prologue-statement[lang='en'] {
   html[data-design='editorial'] .prologue-statement[lang='en'] { margin-left: 0; font-size: clamp(2.25rem, 10.2vw, 3.5rem); }
 }
 @media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation:none !important; }
   .is-entering > [data-reveal], .is-entering[data-reveal='figure'] { animation: none !important; }
 }
 @media print {

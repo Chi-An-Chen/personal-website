@@ -1,4 +1,5 @@
 import type { Publication } from './types';
+export const ieeeAuthorProfile = 'https://ieeexplore.ieee.org/author/325765059341820';
 export const publications = [
   {
     "id": "fahu-mamba",
@@ -8,7 +9,8 @@ export const publications = [
     "year": "2025",
     "description": "A hybrid U-Mamba approach incorporating frequency-aware modeling for breast tumor segmentation.",
     "award": false,
-    "lang": "en"
+    "lang": "en",
+    "officialUrl": "https://ieeexplore.ieee.org/document/11326816/"
   },
   {
     "id": "ssiu-net",
@@ -18,7 +20,8 @@ export const publications = [
     "year": "2025",
     "description": "A state space-inspired segmentation architecture with linear attention.",
     "award": false,
-    "lang": "en"
+    "lang": "en",
+    "officialUrl": "https://ieeexplore.ieee.org/document/11326852/"
   },
   {
     "id": "transformer-mamba-unet",
@@ -28,7 +31,8 @@ export const publications = [
     "year": "2025",
     "description": "Transformer and Mamba components for breast tumor segmentation.",
     "award": true,
-    "lang": "en"
+    "lang": "en",
+    "officialUrl": null
   },
   {
     "id": "lvit-cb",
@@ -38,7 +42,8 @@ export const publications = [
     "year": "2025",
     "description": "Lightweight vision modeling with competitive blocks for finger vein recognition.",
     "award": true,
-    "lang": "en"
+    "lang": "en",
+    "officialUrl": "https://ieeexplore.ieee.org/document/11130997/"
   },
   {
     "id": "lvit-cb-itaoi",
@@ -48,7 +53,8 @@ export const publications = [
     "year": "2025",
     "description": "Research on lightweight vision transformers for finger vein recognition.",
     "award": true,
-    "lang": "zh-Hant"
+    "lang": "zh-Hant",
+    "officialUrl": null
   },
   {
     "id": "virtual-try-on-itac",
@@ -58,6 +64,7 @@ export const publications = [
     "year": "2024",
     "description": "Virtual try-on using composable sequential appearance flow.",
     "award": false,
-    "lang": "zh-Hant"
+    "lang": "zh-Hant",
+    "officialUrl": null
   }
 ] as const satisfies readonly Publication[];
